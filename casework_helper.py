@@ -75,20 +75,6 @@ def fg3_assume23(mu, nu, a3, mn, v, g_pos = True):
     return f3, -g3
 
 
-def fg2_assume2N4(mu, nu, a2, mn, v, g_pos = True):
-    
-    f2num = ((a2-2*nu)*mu) & POS
-    g2num = ((a2-2*mu)*nu) & POS
-    denom = (a2*v - 2*mn) & POS
-    
-    f2 = imath.sqrt((f2num / denom) & GEQ_ONE) & GEQ_ONE
-    g2 = imath.sqrt((g2num / denom) & UNIT_INT) & UNIT_INT
-    
-    if g_pos:
-        return f2, g2
-    return f2, -g2
-
-
 def fg2_assume23(mu, nu, a3, f3, g3, g_pos = True):
     
     f2 = ((1+a3/mu)*f3) & GEQ_ONE
@@ -97,15 +83,7 @@ def fg2_assume23(mu, nu, a3, f3, g3, g_pos = True):
     if g_pos:
         return f2, g2 & UNIT_INT
     return f2, g2 & (-UNIT_INT)
-    
-def fg4_assume2N4(mu, nu, a2, f2, g2, g_pos = True):
-    
-    f4 = ((1-a2/mu)*f2) & UNIT_INT
-    g4 = ((1-a2/nu)*g2)
-    
-    if g_pos:
-        return f2, g2 & GEQ_ONE
-    return f2, g2 & (-GEQ_ONE)
+
     
 def fg4_assume234(mu, nu, a2, f2, f3, g2, g3, g_pos = True):
     
@@ -122,6 +100,30 @@ def fg1_assume1234(mu, nu, a4, f2, f4, g2, g4):
     g1 = (g2+a4*g4/nu) & UNIT_INT
     
     return f1, g1
+
+
+def fg2_assume2N4(mu, nu, a2, mn, v, g_pos = True):
+    
+    f2num = ((a2-2*nu)*mu) & POS
+    g2num = ((a2-2*mu)*nu) & POS
+    denom = (a2*v - 2*mn) & POS
+    
+    f2 = imath.sqrt((f2num / denom) & GEQ_ONE) & GEQ_ONE
+    g2 = imath.sqrt((g2num / denom) & UNIT_INT) & UNIT_INT
+    
+    if g_pos:
+        return f2, g2
+    return f2, -g2
+
+
+def fg4_assume2N4(mu, nu, a2, f2, g2, g_pos = True):
+    
+    f4 = ((1-a2/mu)*f2) & UNIT_INT
+    g4 = ((1-a2/nu)*g2)
+    
+    if g_pos:
+        return f2, g2 & GEQ_ONE
+    return f2, g2 & (-GEQ_ONE)
 
 
 
