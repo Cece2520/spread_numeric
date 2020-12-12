@@ -1,4 +1,4 @@
-# 7x7 case... 
+# case 1|24|567
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -151,5 +151,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A2, A2denom, A6, A6denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A2, A2denom, A6, A6denom, depth+1) )
 
-print 'done!'
+print 'done with case 1|24|567'
 

@@ -42,9 +42,9 @@ def is_feasible(mu, nu, a3, a7):
     if asum == NULL_INT:
         return False
     
-    f3, g3 = fg3_assume23(mu, nu, a3, mn, v, g_pos = False)
-    f2, g2 = fg2_assume23(mu, nu, a3, f3, g3, g_pos = False)
-    f4, g4 = fg4_assume234(mu, nu, a2, f2, f3, g2, g3, g_pos = False)
+    f3, g3 = fg3_assume23(mu, nu, a3, mn, v)
+    f2, g2 = fg2_assume23(mu, nu, a3, f3, g3)
+    f4, g4 = fg4_assume234(mu, nu, a2, f2, f3, g2, g3)
     f1, g1 = fg1_assume124(mu, nu, a4, f2, f4, g2, g4)
     
     if f1 == NULL_INT:
@@ -52,15 +52,14 @@ def is_feasible(mu, nu, a3, a7):
     if g1 == NULL_INT:
         return False
     
-    a1 = 1-asum
+    a1 = (1-asum) & UNIT_INT
     avec = [a1, a2, a3, a4, 0, 0, a7]
     
     
-    # mu(f1 - f7) = a7*f7 --> mu*f1 = (mu+a7)*f7
-    
-    f7 = (mu*f1/(mu+a7)) & UNIT_INT
-    g7 = (nu*g1/(nu+a7)) & GEQ_ONE
-    
+    f7, g7 = fg3_assume23(mu, nu, a7, mn, v, g_pos = False)
+    f1bot, g1bot = fg2_assume23(mu, nu, a3, f3, g3)
+    f1 = f1 & f1bot
+    g1 = g1 & g1bot
     
     # the sum of squares of eigenvalues equals 
     # the graph edge density

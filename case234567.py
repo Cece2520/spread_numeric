@@ -151,5 +151,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A3, A3denom, A6, A6denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A3, A3denom, A6, A6denom, depth+1) )
 
-print 'done with case 234|567!'
+print 'done with case 234|567'
 

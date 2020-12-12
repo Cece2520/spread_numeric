@@ -1,3 +1,4 @@
+# case 1|4|567
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -52,15 +53,19 @@ def is_feasible(mu, nu, a4, a6):
     if g1 == NULL_INT:
         return False
     
-    a1 = 1-asum
+    
+    f4, g4 = fg3_assume23(mu, nu, a4, mn, v)
+    f1top, g1top = fg2_assume23(mu, nu, a4, f4, g4)
+    f1 = f1 & f1top
+    g1 = g1 & g1top
+    
+    if f1 == NULL_INT:
+        return False
+    if g1 == NULL_INT:
+        return False
+    
+    a1 = (1 - asum) & UNIT_INT
     avec = [a1, 0, 0, a4, a5, a6, a7]
-    
-    
-    # mu(f1 - f4) = a4*f4 --> mu*f1 = (mu+a4)*f4
-    
-    f4 = (mu*f1/(mu+a4)) & UNIT_INT
-    g4 = (nu*g1/(nu+a4)) & GEQ_ONE
-    
     
     # the sum of squares of eigenvalues equals 
     # the graph edge density
@@ -151,5 +156,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A4, A4denom, A6, A6denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A4, A4denom, A6, A6denom, depth+1) )
 
-print 'done!'
+print 'done with case 1|4|567'
 
