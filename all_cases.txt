@@ -9,7 +9,7 @@
     1|24|57 [done @ depth 0; bug?]
 4:
     4|567 [done @ depth 10]
-    1|567 [doen @ depth 12]
+    1|567 [done @ depth 12]
     1|24|7 [done @ depth 12] & 1|4|57 [done @ depth 4; bug?]
     24|57 [done @ depth 2; bug?]
 3:
@@ -18,5 +18,5 @@
     24|6
 2:
     4|7 [self-evident]
-    1|7 [no termination by depth 100... :)]
+    1|7 [no termination by depth 100+... :)]
 

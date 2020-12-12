@@ -1,4 +1,4 @@
-# 7x7 case... 
+# case 4|567
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -47,12 +47,21 @@ def is_feasible(mu, nu, a4, a6):
     f5, g5 = fg2_assume23(mu, nu, a6, f6, g6, g_pos = False)
     f7, g7 = fg4_assume234(mu, nu, a5, f5, f6, g5, g6, g_pos = False)
     
-    f4 = ((a5*f5+a6*f6+a7*f7)/mu) & GEQ_ONE
-    g4 = ((a5*g5+a6*g6+a7*g7)/nu) & UNIT_INT
+    f4 = ((a5*f5+a6*f6+a7*f7)/mu) & UNIT_INT
+    g4 = ((a5*g5+a6*g6+a7*g7)/nu) & GEQ_ONE
+    
+    f7 = (a4*f4/mu) & UNIT_INT
+    g7 = (a4*g4/nu) & (-GEQ_ONE)
+    
+    # density equals sum of square of eigenvalues
+    
+    avec = [0, 0, 0, a4, a5, a6, a7]
+    if not density_feasible(mu, nu, avec):
+        return False
+    
     
     # double-check the eigenvector eq'ns
     
-    avec = [0, 0, 0, a4, a5, a6, a7]
     fvec = [None, None, None, f4, f5, f6, f7]
     gvec = [None, None, None, g4, g5, g6, g7]
     
@@ -71,7 +80,7 @@ def is_feasible(mu, nu, a4, a6):
     return True
 
 
-# divide-and-conquer!  begin with a grid over (mu, nu, a2, a6)
+# divide-and-conquer!  begin with a grid over (mu, nu, a4, a6)
 # in the box [.65, 1] x [-.5, -.15] x [0, 1] x [0, 1]
 # subdivide by the stepsizes .05, .05, .1, .1, respective
 # queue up each box as a separate case, stored with depth term
@@ -84,14 +93,14 @@ case_queue = queue.Queue()
 
 Mdenom = 20
 Ndenom = 20
-A2denom = 10
+A4denom = 10
 A6denom = 10
 
 for M in range(7, 20):
     for N in range(-10, -3):
-        for A2 in range(0, 10):
-            for A6 in range(0, 10-A2):
-                case_queue.put( (M,Mdenom, N,Ndenom, A2,A2denom, A6,A6denom, 0) )
+        for A4 in range(0, 10):
+            for A6 in range(0, 10-A4):
+                case_queue.put( (M,Mdenom, N,Ndenom, A4,A4denom, A6,A6denom, 0) )
 
 curr_depth = -1
 curr_size = 0
@@ -100,7 +109,7 @@ next_size = 7*7*55
 ctr = 0
 
 while not case_queue.empty():
-    (M,Mdenom, N,Ndenom, A2,A2denom, A6,A6denom, depth) = case_queue.get()
+    (M,Mdenom, N,Ndenom, A4,A4denom, A6,A6denom, depth) = case_queue.get()
     if depth != curr_depth:
         curr_depth = depth
         curr_size = next_size
@@ -111,27 +120,27 @@ while not case_queue.empty():
     
     mu = interval[(M+0.0)/Mdenom, (M+1.0)/Mdenom]
     nu = interval[(N+0.0)/Ndenom, (N+1.0)/Ndenom]
-    a2 = interval[(A2+0.0)/A2denom, (A2+1.0)/A2denom]
+    a4 = interval[(A4+0.0)/A4denom, (A4+1.0)/A4denom]
     a6 = interval[(A6+0.0)/A6denom, (A6+1.0)/A6denom]
     
-    if is_feasible(mu, nu, a2, a6):
+    if is_feasible(mu, nu, a4, a6):
         next_size += 2
         
         if depth % 4 == 0:
-            case_queue.put( (M,Mdenom, N,Ndenom, 2*A2, 2*A2denom, A6, A6denom, depth+1) )
-            case_queue.put( (M,Mdenom, N,Ndenom, 2*A2+1, 2*A2denom, A6, A6denom, depth+1) )
+            case_queue.put( (M,Mdenom, N,Ndenom, 2*A4, 2*A4denom, A6, A6denom, depth+1) )
+            case_queue.put( (M,Mdenom, N,Ndenom, 2*A4+1, 2*A4denom, A6, A6denom, depth+1) )
         
         if depth % 4 == 1:
-            case_queue.put( (M,Mdenom, N,Ndenom, A2, A2denom, 2*A6, 2*A6denom, depth+1) )
-            case_queue.put( (M,Mdenom, N,Ndenom, A2, A2denom, 2*A6+1, 2*A6denom, depth+1) )
+            case_queue.put( (M,Mdenom, N,Ndenom, A4, A4denom, 2*A6, 2*A6denom, depth+1) )
+            case_queue.put( (M,Mdenom, N,Ndenom, A4, A4denom, 2*A6+1, 2*A6denom, depth+1) )
         
         if depth % 4 == 2:
-            case_queue.put( (2*M,2*Mdenom, N,Ndenom, A2, A2denom, A6, A6denom, depth+1) )
-            case_queue.put( (2*M+1,2*Mdenom, N,Ndenom, A2, A2denom, A6, A6denom, depth+1) )
+            case_queue.put( (2*M,2*Mdenom, N,Ndenom, A4, A4denom, A6, A6denom, depth+1) )
+            case_queue.put( (2*M+1,2*Mdenom, N,Ndenom, A4, A4denom, A6, A6denom, depth+1) )
         
         if depth % 4 == 3:
-            case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A2, A2denom, A6, A6denom, depth+1) )
-            case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A2, A2denom, A6, A6denom, depth+1) )
+            case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A4, A4denom, A6, A6denom, depth+1) )
+            case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A4, A4denom, A6, A6denom, depth+1) )
 
-print 'done!'
+print 'done with case 4|567'
 
