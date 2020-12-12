@@ -108,7 +108,7 @@ for M in range(7, 20):
 
 curr_depth = -1
 curr_size = 0
-next_size = 7*7*55
+next_size = case_queue.qsize()
 
 ctr = 0
 
@@ -146,5 +146,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A4, A4denom, A5, A5denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A4, A4denom, A5, A5denom, depth+1) )
 
-print 'done!'
+print 'done with case 1|4|57'
 

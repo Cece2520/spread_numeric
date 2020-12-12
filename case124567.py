@@ -113,7 +113,7 @@ for M in range(7, 20):
 
 curr_depth = -1
 curr_size = 0
-next_size = 7*7*55
+next_size = case_queue.qsize()
 
 ctr = 0
 

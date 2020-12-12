@@ -136,6 +136,6 @@ while not case_queue.empty() and curr_depth < 100:
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A1, A1denom, A7, A7denom, depth+1) )
 
 if not case_queue.empty():
-    print '1|7 feasible'
+    print 'case 1|7 is feasible'
 else:
     'done with case 1|7 ... uh oh!'
