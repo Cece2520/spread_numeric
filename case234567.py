@@ -33,7 +33,7 @@ def is_feasible(mu, nu, a3, a6):
         return False
     
     a2 = a2_assume234(a3, mn, v)
-    asum = (a2 & asum) & UNIT_INT
+    asum = (a2 + asum) & UNIT_INT
     if asum == NULL_INT:
         return False
     

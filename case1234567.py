@@ -35,7 +35,7 @@ def is_feasible(mu, nu, a3, a6):
     # formulas for ai's, fi's, and gi's...
     
     a2 = a2_assume234(a3, mn, v)
-    asum = (a2 & asum) & UNIT_INT
+    asum = (asum + a2) & UNIT_INT
     if asum == NULL_INT:
         return False
     
