@@ -1,3 +1,4 @@
+# case 1|234|567
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -53,17 +54,19 @@ def is_feasible(mu, nu, a3, a6):
     if asum == NULL_INT:
         return False
     
-    a1 = 1-asum
+    a1 = (1-asum) & UNIT_INT
     avec = [a1, a2, a3, a4, a5, a6, a7]
     
     
     # the sum of squares of eigenvalues equals 
     # the graph edge density
+    
     if not density_feasible(mu, nu, avec):
         return False
     
     
     # formulas for f1, g1, ..., f7, g7 must hold
+    
     f3, g3 = fg3_assume23(mu, nu, a3, mn, v)
     f2, g2 = fg2_assume23(mu, nu, a3, f3, g3)
     f4, g4 = fg4_assume234(mu, nu, a2, f2, f3, g2, g3)
@@ -88,15 +91,13 @@ def is_feasible(mu, nu, a3, a6):
         return False
     
     
-    # the strictest eigenvector equations are the ones 
-    # for the the 4th and 7th vertices
+    # check eigenvector equations 
     
     fvec = [f1, f2, f3, f4, f5, f6, f7]
     gvec = [g1, g2, g3, g4, g5, g6, g7]
     
-    for i in [0,1,2,3,4,5,6]:
-        if not fg_row_feasible(mu, nu, i, fvec, gvec, avec):
-            return False
+    if not fg_row_feasible(mu, nu, fvec, gvec, avec):
+        return False
     
     
     # might as well also check the norms and ellipse equations
@@ -172,5 +173,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A3, A3denom, A6, A6denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A3, A3denom, A6, A6denom, depth+1) )
 
-print 'done!'
+print 'done with case 1|234|567!'
 

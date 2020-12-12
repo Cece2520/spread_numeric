@@ -56,9 +56,8 @@ def is_feasible(mu, nu, a4, a6):
     fvec = [None, None, None, f4, f5, f6, f7]
     gvec = [None, None, None, g4, g5, g6, g7]
     
-    for i in [3,4,5,6]:
-        if not fg_row_feasible(mu, nu, i, fvec, gvec, avec):
-            return False
+    if not fg_row_feasible(mu, nu, fvec, gvec, avec):
+        return False
     
     
     # might as well also check the norms and ellipse equations

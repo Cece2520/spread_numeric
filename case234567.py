@@ -1,4 +1,4 @@
-# 7x7 case... 
+# 234|567 case
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -25,15 +25,12 @@ def is_feasible(mu, nu, a3, a6):
     
     
     # ignore cases where weight sum exceeds 1
+    # apply formulas for ai's, fi's, and gi's
     
     asum = (a3+a6) & UNIT_INT
     
     if asum == NULL_INT:
         return False
-    
-    
-    # again, weight sum cannot exceed 1; 
-    # formulas for a2, a4 also work for a5, a7
     
     a2 = a2_assume234(a3, mn, v)
     asum = (a2 & asum) & UNIT_INT
@@ -50,13 +47,8 @@ def is_feasible(mu, nu, a3, a6):
     if asum == NULL_INT:
         return False
     
-    a7 = a4_assumeN2347(a6, mn, v)
-    
-    
-    # we know all values of ai, and they sum to 1
-    
-    asum = (asum + a7) & interval(1)
-    if asum == NULL_INT:
+    a7 = a4_assumeN2347(a6, mn, v) & (1-asum)
+    if a7 == NULL_INT:
         return False
     
     
@@ -80,18 +72,13 @@ def is_feasible(mu, nu, a3, a6):
     f7, g7 = fg4_assume234(mu, nu, a5, f5, f6, g5, g6, g_pos = False)
     
     
-    # the strictest eigenvector equations are the ones 
-    # for the the 4th and 7th vertices
+    # double-check eigenvector equations, norms, and ellipses
     
     fvec = [None, f2, f3, f4, f5, f6, f7]
     gvec = [None, g2, g3, g4, g5, g6, g7]
     
-    for i in [1,2,3,4,5,6]:
-        if not fg_row_feasible(mu, nu, i, fvec, gvec, avec):
-            return False
-    
-    
-    # might as well also check the norms and ellipse equations
+    if not fg_row_feasible(mu, nu, fvec, gvec, avec):
+        return False
     
     if not norm_feasible(fvec, gvec, avec):
         return False
@@ -164,5 +151,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A3, A3denom, A6, A6denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A3, A3denom, A6, A6denom, depth+1) )
 
-print 'done!'
+print 'done with case 234|567!'
 

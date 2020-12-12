@@ -25,8 +25,9 @@ POS = interval[0,inf]
 
 # always, we assume that:
     # u = mu - nu, 
-    # v = mu, and 
+    # v = mu + nu, and 
     # mn = mu*nu
+
 # all other variables are self-evident
 # formulas are written to minimize FLOPs and accumulated 
 # error when possible
@@ -146,58 +147,97 @@ def fg4_assume2N4(mu, nu, a2, f2, g2, g_pos = True):
 
 # checks that fvec and gvec can satisfy the eigen-equations
 
-def fg_row_feasible(mu, nu, i, fvec, gvec, avec):
+def fg_row_feasible(mu, nu, fvec, gvec, avec):
     
-    fsum = interval(0)
-    gsum = interval(0)
-    
-    if i == 0:
+    if not fvec[0] == None:
+        fsum = interval(0)
+        gsum = interval(0)
         for j in range(7):
             if not fvec[j] == None:
                 fsum += avec[j]*fvec[j]
                 gsum += avec[j]*gvec[j]
+        if fsum & (mu*fvec[0]) == NULL_INT:
+            return False
+        if gsum & (nu*gvec[0]) == NULL_INT:
+            return False
+
     
-    if i == 1:
+    if not fvec[1] == None:
+        fsum = interval(0)
+        gsum = interval(0)
         for j in [0,1,2,4,5,6]:
             if not fvec[j] == None:
                 fsum += avec[j]*fvec[j]
                 gsum += avec[j]*gvec[j]
+        if fsum & (mu*fvec[1]) == NULL_INT:
+            return False
+        if gsum & (nu*gvec[1]) == NULL_INT:
+            return False
+
     
-    if i == 2:
+    if not fvec[2] == None:
+        fsum = interval(0)
+        gsum = interval(0)
         for j in [0,1,4,5,6]:
             if not fvec[j] == None:
                 fsum += avec[j]*fvec[j]
                 gsum += avec[j]*gvec[j]
+        if fsum & (mu*fvec[2]) == NULL_INT:
+            return False
+        if gsum & (nu*gvec[2]) == NULL_INT:
+            return False
     
-    if i == 3:
+
+    if not fvec[3] == None:
+        fsum = interval(0)
+        gsum = interval(0)
         for j in [0,4,5,6]:
             if not fvec[j] == None:
                 fsum += avec[j]*fvec[j]
                 gsum += avec[j]*gvec[j]
+        if fsum & (mu*fvec[3]) == NULL_INT:
+            return False
+        if gsum & (nu*gvec[3]) == NULL_INT:
+            return False
     
-    if i == 4:
+
+    if not fvec[4] == None:
+        fsum = interval(0)
+        gsum = interval(0)
         for j in [0,1,2,3,4,5]:
             if not fvec[j] == None:
                 fsum += avec[j]*fvec[j]
                 gsum += avec[j]*gvec[j]
+        if fsum & (mu*fvec[4]) == NULL_INT:
+            return False
+        if gsum & (nu*gvec[4]) == NULL_INT:
+            return False
     
-    if i == 5:
+
+    if not fvec[5] == None:
+        fsum = interval(0)
+        gsum = interval(0)
         for j in [0,1,2,3,4]:
             if not fvec[j] == None:
                 fsum += avec[j]*fvec[j]
                 gsum += avec[j]*gvec[j]
+        if fsum & (mu*fvec[5]) == NULL_INT:
+            return False
+        if gsum & (nu*gvec[5]) == NULL_INT:
+            return False
     
-    if i == 6:
+
+    if not fvec[6] == None:
+        fsum = interval(0)
+        gsum = interval(0)
         for j in [0,1,2,3]:
             if not fvec[j] == None:
                 fsum += avec[j]*fvec[j]
                 gsum += avec[j]*gvec[j]
-    
-    if fsum & (mu*fvec[i]) == NULL_INT:
-        return False
-    
-    if gsum & (nu*gvec[i]) == NULL_INT:
-        return False
+        if fsum & (mu*fvec[6]) == NULL_INT:
+            return False
+        if gsum & (nu*gvec[6]) == NULL_INT:
+            return False
     
     return True
 
@@ -236,7 +276,6 @@ def norm_feasible(fvec, gvec, avec):
 
 
 # checks the ellipse equations can be satisfied
-# probably the least useful filter
 
 def ellipse_feasible(mu, nu, fvec, gvec, u):
     
