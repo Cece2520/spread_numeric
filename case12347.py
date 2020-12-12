@@ -45,7 +45,7 @@ def is_feasible(mu, nu, a3, a7):
     f3, g3 = fg3_assume23(mu, nu, a3, mn, v, g_pos = False)
     f2, g2 = fg2_assume23(mu, nu, a3, f3, g3, g_pos = False)
     f4, g4 = fg4_assume234(mu, nu, a2, f2, f3, g2, g3, g_pos = False)
-    f1, g1 = fg1_assume1234(mu, nu, a4, f2, f4, g2, g4)
+    f1, g1 = fg1_assume124(mu, nu, a4, f2, f4, g2, g4)
     
     if f1 == NULL_INT:
         return False

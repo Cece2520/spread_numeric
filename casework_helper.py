@@ -105,7 +105,7 @@ def fg4_assume234(mu, nu, a2, f2, f3, g2, g3, g_pos = True):
         return f4, g4 & GEQ_ONE
     return f4, g4 & (-GEQ_ONE)
 
-def fg1_assume1234(mu, nu, a4, f2, f4, g2, g4):
+def fg1_assume124(mu, nu, a4, f2, f4, g2, g4):
     
     f1 = (f2+a4*f4/mu) & GEQ_ONE
     g1 = (g2+a4*g4/nu) & UNIT_INT
@@ -135,7 +135,6 @@ def fg4_assume2N4(mu, nu, a2, f2, g2, g_pos = True):
     if g_pos:
         return f2, g2 & GEQ_ONE
     return f2, g2 & (-GEQ_ONE)
-
 
 
 # below are methods to directly determine feasibility

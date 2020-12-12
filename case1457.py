@@ -48,14 +48,9 @@ def is_feasible(mu, nu, a4, a5):
     if g7 == NULL_INT:
         return False
     
-    
-    # mu*(f1-f5) = a7*f7 --> a7 = mu*(f1-f5)/f7, etc
-    
-    a7 = (mu*(f1-f5)/f7) & (nu*(g1-g5)/g7) & UNIT_INT
-    a1 = (1-(a7+asum)) & UNIT_INT
-    
-    if a1 == NULL_INT:
-        return False
+    a7 = a4_assume12N4(a5, mn, v)
+    asum = (asum+a7) & UNIT_INT
+    a1 = (1-asum) & UNIT_INT
     
     avec = [a1, 0, 0, a4, a5, 0, a7]
     # double-check the eigenvector eq'ns
