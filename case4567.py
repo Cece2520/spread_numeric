@@ -47,11 +47,12 @@ def is_feasible(mu, nu, a4, a6):
     f5, g5 = fg2_assume23(mu, nu, a6, f6, g6, g_pos = False)
     f7, g7 = fg4_assume234(mu, nu, a5, f5, f6, g5, g6, g_pos = False)
     
-    f4 = ((a5*f5+a6*f6+a7*f7)/mu) & UNIT_INT
-    g4 = ((a5*g5+a6*g6+a7*g7)/nu) & GEQ_ONE
     
-    f7 = (a4*f4/mu) & UNIT_INT
-    g7 = (a4*g4/nu) & (-GEQ_ONE)
+    # since mu*f7 = a4*f4 and same for nu, g...
+    
+    f4 = (mu*f7/a4) & UNIT_INT
+    g4 = (nu*g7/a4) & GEQ_ONE
+    
     
     # density equals sum of square of eigenvalues
     

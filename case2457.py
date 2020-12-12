@@ -1,3 +1,4 @@
+# case 24|57
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -52,7 +53,7 @@ def is_feasible(mu, nu, a2, a5):
     # mu*f4 = a5*f5+a7*f7 --> a7 = (mu*f4-a5*f5)/f7, etc
     
     a7 = ((mu*f4-a5*f5)/f7) & ((nu*g4-a5*g5)/g7) & UNIT_INT
-    a4 = ((mu*f7-a2*f2)/f4) & ((nu*g7-a2*g2)/g4) & UNIT_INT & (1-a2-a5-a7)
+    a4 = ((mu*f7-a2*f2)/f4) & ((nu*g7-a2*g2)/g4) & UNIT_INT & (1-(a2+a5+a7))
     
     if a4 == NULL_INT:
         return False
@@ -140,5 +141,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A2, A2denom, A5, A5denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A2, A2denom, A5, A5denom, depth+1) )
 
-print 'done!'
+print 'done with case 24|57'
 

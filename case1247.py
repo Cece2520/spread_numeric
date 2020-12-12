@@ -1,3 +1,4 @@
+# case 1|24|7
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -54,16 +55,24 @@ def is_feasible(mu, nu, a2, a7):
     if a1 == NULL_INT:
         return False
     
-    # mu*f7 = (a1*f1+a2*f2+a4*f4) & same for nu, g
+    f7, g7 = fg3_assume23(mu, nu, a7, mn, v, g_pos = False)
+    f1bot, g1bot = fg2_assume23(mu, nu, a7, f7, g7)
+    f1 = f1 & f1bot
+    g1 = g1 & g1bot
     
-    f7, g7 = (a1*f1+a2*f2+a4*f4)/mu, (a1*g1+a2*g2+a4*g4)/nu
+    if f1 == NULL_INT:
+        return False
+    if g1 == NULL_INT:
+        return False
     
-    if f7 == NULL_INT:
-        return False
-    if g7 == NULL_INT:
-        return False
+    
+    # graph density equals sum of squares of eigenvalues
     
     avec = [a1, a2, 0, a4, 0, 0, a7]
+    if not density_feasible(mu, nu, avec):
+        return False
+    
+    
     # double-check the eigenvector eq'ns
     
     fvec = [f1, f2, None, f4, None, None, f7]
@@ -145,5 +154,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A2, A2denom, A7, A7denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A2, A2denom, A7, A7denom, depth+1) )
 
-print 'done!'
+print 'done with case 1|24|7'
 

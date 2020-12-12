@@ -29,6 +29,7 @@ def is_feasible(mu, nu, a4, a5):
     if asum == NULL_INT:
         return False
     
+    
     # again, weight sum cannot exceed 1; 
     # apply formulas for other ai's, fi's, gi's
     
@@ -52,7 +53,17 @@ def is_feasible(mu, nu, a4, a5):
     asum = (asum+a7) & UNIT_INT
     a1 = (1-asum) & UNIT_INT
     
+    if a1 == NULL_INT:
+        return False
+    
+    
+    # density equals sum of square of eigenvalues
+    
     avec = [a1, 0, 0, a4, a5, 0, a7]
+    if not density_feasible(mu, nu, avec):
+        return False
+    
+    
     # double-check the eigenvector eq'ns
     
     fvec = [f1, None, None, f4, f5, None, f7]

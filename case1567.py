@@ -1,3 +1,4 @@
+#case 1|567
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -52,8 +53,8 @@ def is_feasible(mu, nu, a1, a6):
     if g1 == NULL_INT:
         return False
     
-    asum = (asum + a1) & UNIT_INT
-    if asum == NULL_INT:
+    a1 = (1-asum) & UNIT_INT
+    if a1 == NULL_INT:
         return False
     
     avec = [a1, 0, 0, 0, a5, a6, a7]
@@ -148,5 +149,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A1, A1denom, A6, A6denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A1, A1denom, A6, A6denom, depth+1) )
 
-print 'done!'
+print 'done with case 1|567'
 
