@@ -1,3 +1,4 @@
+# 1|24|57
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -29,11 +30,33 @@ def is_feasible(mu, nu, a2, a5):
     if asum == NULL_INT:
         return False
     
-    # again, weight sum cannot exceed 1; 
+    a4 = a4_assume12N4(a2, mn, v)
+    asum = (asum + a4) & UNIT_INT
+    if asum == NULL_INT:
+        return False
+    
+    a7 = a4_assume12N4(a5, mn, v)
+    asum = (asum + a7) & UNIT_INT
+    if asum == NULL_INT:
+        return False
+    
+    a1 = (1-asum) & UNIT_INT
+    
+    if a1 == NULL_INT:
+        return False
+    
+    
+    # density equals sum of squares of eigenvalues
+    
+    avec = [a1, a2, 0, a4, a5, 0, a7]
+    if not density_feasible(mu, nu, avec):
+        return False
+    
     # apply formulas for other ai's, fi's, gi's
     
     f2, g2 = fg2_assume2N4(mu, nu, a2, mn, v)
     f4, g4 = fg4_assume2N4(mu, nu, a2, f2, g2)
+    f1, g1 = fg1_assume124(mu, nu, a4, f2, f4, g2, g4)
     
     if f4 == NULL_INT:
         return False
@@ -42,38 +65,21 @@ def is_feasible(mu, nu, a2, a5):
     
     f5, g5 = fg2_assume2N4(mu, nu, a5, mn, v, g_pos = False)
     f7, g7 = fg4_assume2N4(mu, nu, a5, f5, g5, g_pos = False)
+    f1bot, g1bot = fg1_assume124(mu, nu, a7, f5, f7, g5, g7)
+    f1 = f1 & f1bot
+    g1 = g1 & g1bot
     
-    if f7 == NULL_INT:
+    if f1 == NULL_INT:
         return False
-    if g7 == NULL_INT:
-        return False
-    
-    
-    # mu(f1-f2) = a4*f4 --> a4 = mu(f1-f2)/f4 & same for nu, g
-    
-    a4 = (mu*(f1-f2)/f4) & (nu*(g1-g2)/g4) & UNIT_INT
-    asum = (asum + a4) & UNIT_INT
-    if asum == NULL_INT:
+    if g1 == NULL_INT:
         return False
     
-    
-    # mu(f1-f5) = a7*f7 --> a7 = mu(f1-f5)/f7 & same for nu, g
-    
-    a7 = (mu*(f1-f5)/f7) & (nu*(g1-g5)/g7) & UNIT_INT
-    asum = (asum + a7) & UNIT_INT
-    if asum == NULL_INT:
-        return False
-    
-    a1 = (1-a2-a4-a5-a7) & UNIT_INT
-    
-    if a1 == NULL_INT:
-        return False
-    
-    avec = [a1, a2, 0, a4, a5, 0, a7]
-    # double-check the eigenvector eq'ns
     
     fvec = [f1, f2, None, f4, f5, None, f7]
     gvec = [g1, g2, None, g4, g5, None, g7]
+    
+    
+    # double-check the eigenvector eq'ns
     
     if not fg_row_feasible(mu, nu, fvec, gvec, avec):
         return False
@@ -152,5 +158,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A2, A2denom, A5, A5denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A2, A2denom, A5, A5denom, depth+1) )
 
-print 'done!'
+print 'done with case 1|24|57'
 

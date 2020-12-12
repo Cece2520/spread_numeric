@@ -1,4 +1,4 @@
-# 7x7 case... 
+# 24|567
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -55,19 +55,19 @@ def is_feasible(mu, nu, a2, a6):
     if g7 == NULL_INT:
         return False
     
+    a7 = a4_assumeN2347(a6, mn, v)
+    asum = (asum + a7) & UNIT_INT
     
-    # note: mu*f4 = a5*f5+a6*f6+a7*f7 
-        # --> a7 = (mu*f4 - a5*f5 + a6*f6) / f7
-        # & similarly for nu, g
-    
-    a7 = ((mu*f4 - a5*f5 + a6*f6)/f7) & ((nu*g4 - a5*g5 + a6*g6)/g7) & UNIT_INT
-    
-    a4 = (1-a2-a5-a6-a7) & UNIT_INT
+    a4 = (1-asum) & UNIT_INT
     if a4 == NULL_INT:
         return False
     
-    avec = [0, a2, 0, a4, a5, a6, a7]
     # double-check the eigenvector eq'ns
+    
+    avec = [0, a2, 0, a4, a5, a6, a7]
+    
+    
+    # check eigenvector equations
     
     fvec = [None, f2, None, f4, f5, f6, f7]
     gvec = [None, g2, None, g4, g5, g6, g7]
@@ -149,5 +149,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A2, A2denom, A6, A6denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A2, A2denom, A6, A6denom, depth+1) )
 
-print 'done!'
+print 'done with case 24|567'
 
