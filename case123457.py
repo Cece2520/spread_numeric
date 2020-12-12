@@ -1,3 +1,4 @@
+# case 1|234|57
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -60,8 +61,9 @@ def is_feasible(mu, nu, a3, a5):
     if g1 == NULL_INT:
         return False
     
-    a7 = (mu*(f1 - f5) / f7) & (nu*(g1 - g5) / g7) & UNIT_INT
-    a1 = (1-a2-a3-a4-a5-a7) & UNIT_INT
+    a7 = a4_assume12N4(a5, mn, v)
+    asum = (asum + a7) & UNIT_INT
+    a1 = (1 - asum) & UNIT_INT
     if a1 == NULL_INT:
         return False
     

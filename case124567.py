@@ -61,8 +61,10 @@ def is_feasible(mu, nu, a2, a6):
     if g1 == NULL_INT:
         return False
     
-    a4 = (mu*(f1 - f2) / f4) & (nu*(g1 - g2) / g4) & UNIT_INT
-    a1 = (1-a2-a4-a5-a6-a7) & UNIT_INT
+    a4 = a4_assume12N4(a2, mn, v) & UNIT_INT
+    asum = (asum + a4) & UNIT_INT
+    a1 = (1-asum) & UNIT_INT
+    
     if a1 == NULL_INT:
         return False
     
