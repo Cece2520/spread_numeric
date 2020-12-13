@@ -101,6 +101,8 @@ next_size = 7*7*55
 
 ctr = 0
 
+print 'trying case 1|7 ...'
+
 while not case_queue.empty() and curr_depth < 100:
     (M,Mdenom, N,Ndenom, A1,A1denom, A7,A7denom, depth) = case_queue.get()
     if depth != curr_depth:
@@ -108,7 +110,7 @@ while not case_queue.empty() and curr_depth < 100:
         curr_size = next_size
         ctr += curr_size
         next_size = 0
-        print 'on depth =', curr_depth, '...', 'size =', curr_size, '...', 'so far', ctr, '...'
+        print '\ton depth =', curr_depth, '...', 'size =', curr_size, '...', 'so far', ctr, '...'
         
     
     mu = interval[(M+0.0)/Mdenom, (M+1.0)/Mdenom]
@@ -136,6 +138,6 @@ while not case_queue.empty() and curr_depth < 100:
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A1, A1denom, A7, A7denom, depth+1) )
 
 if not case_queue.empty():
-    print 'case 1|7 is feasible'
+    print 'feasible\n'
 else:
-    'done with case 1|7 ... uh oh!'
+    'infeasible ... that is very bad\n'
