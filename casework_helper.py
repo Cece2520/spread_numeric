@@ -42,10 +42,10 @@ def a2_assume234(a3, mn, v):
     
 def a4_assume1234(a3, mn, v):
     
-    a4num = -a3*(2*(mn + a3*v)**2 + a3**3*v)**2
-    a4denom = -4*mn**2*(mn + a3*v)**2
-    a4denom += 2*a3**3 * (a3*v + mn)*(a3*v + 3*mn)*v
-    a4denom += a3**5*v*( 2*mn + a3*v )
+    a4num = a3*(2*(mn + a3*v)**2 + a3**3*v)**2
+    a4denom = 4*mn**2*(mn + a3*v)**2
+    a4denom -= 2*a3**3 * (a3*v + mn)*(a3*v + 3*mn)*v
+    a4denom -= a3**5*v*( 2*mn + a3*v )
     
     return (a4num / a4denom) & UNIT_INT
     
@@ -54,13 +54,13 @@ def a4_assume1234(a3, mn, v):
 
 
 def a4_assumeN2347(a3, mn, v):
-    a4num = -4*((3*a3*v + mn)*(2*a3*v + mn) - a3*mn*v)*mn**2*a3 
-    a4num -= 4*v*a3**4*((mn + a3*v)**2 + v**2*(4*mn + a3*v))
-    a4num -= v**2*a3**7
+    a4num = 4*((3*a3*v + mn)*(2*a3*v + mn) - a3*mn*v)*mn**2*a3 
+    a4num += 4*v*a3**4*((mn + a3*v)**2 + v**2*(4*mn + a3*v))
+    a4num += v**2*a3**7
 
-    a4denom = -4*mn**2*(mn + a3*v)**2
-    a4denom += 2*a3**3 * (a3*v + mn)*(a3*v + 3*mn)*v
-    a4denom += a3**5*v*( 2*mn + a3*v )
+    a4denom = 4*mn**2*(mn + a3*v)**2
+    a4denom -= 2*a3**3 * (a3*v + mn)*(a3*v + 3*mn)*v
+    a4denom -= a3**5*v*( 2*mn + a3*v )
     
     return (a4num / a4denom) & UNIT_INT
 
