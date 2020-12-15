@@ -129,10 +129,11 @@ while not case_queue.empty():
         print '\ton depth =', curr_depth, '...', 'size =', curr_size, '...', 'so far', ctr, '...'
         
     
-    mu = interval[(M+0.0)/Mdenom, (M+1.0)/Mdenom]
-    nu = interval[(N+0.0)/Ndenom, (N+1.0)/Ndenom]
-    a2 = interval[(A2+0.0)/A2denom, (A2+1.0)/A2denom]
-    a6 = interval[(A6+0.0)/A6denom, (A6+1.0)/A6denom]
+    mu = interval[M, M+1] / interval(Mdenom)
+    nu = interval[N, N+1] / interval(Ndenom)
+    a2 = interval[A2, A2+1] / interval(A2denom)
+    a6 = interval[A6, A6+1] / interval(A6denom)
+    
     
     if is_feasible(mu, nu, a2, a6):
         next_size += 2
