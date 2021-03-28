@@ -134,8 +134,8 @@ def fg4_assume2N4(mu, nu, a2, f2, g2, g_pos = True):
     g4 = ((1-a2/nu)*g2)
     
     if g_pos:
-        return f2, g2 & GEQ_ONE
-    return f2, g2 & (-GEQ_ONE)
+        return f4, g4 & GEQ_ONE
+    return f4, g4 & (-GEQ_ONE)
 
 
 # below are methods to directly determine feasibility
