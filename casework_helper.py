@@ -8,6 +8,7 @@ UNIT_INT = interval[0,1]
 GEQ_ONE = interval[1, inf]
 POS = interval[0,inf]
 
+MAX_DEPTH = 50
 
 # these are helper methods meant to be used when 
 # handling cases that share formulas 

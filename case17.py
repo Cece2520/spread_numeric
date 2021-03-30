@@ -103,7 +103,7 @@ ctr = 0
 
 print 'trying case 1|7 ...'
 
-while not case_queue.empty() and curr_depth < 100:
+while not case_queue.empty() and curr_depth < MAX_DEPTH:
     (M,Mdenom, N,Ndenom, A1,A1denom, A7,A7denom, depth) = case_queue.get()
     if depth != curr_depth:
         curr_depth = depth
@@ -138,7 +138,8 @@ while not case_queue.empty() and curr_depth < 100:
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A1, A1denom, A7, A7denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A1, A1denom, A7, A7denom, depth+1) )
 
-if not case_queue.empty():
-    print 'feasible\n'
+if case_queue.empty():
+    print 'infeasible\n'
 else:
-    'infeasible ... that is very bad\n'
+    print 'feasible\n'
+

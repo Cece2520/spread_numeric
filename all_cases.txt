@@ -1,27 +1,83 @@
 ### UNDER CONSTRUCTION ###
 
-7:
-    1|234|567 [done @ depth 20]
-6:
-    234|567 [done @ depth 24]
-    1|24|567 [done @ depth 16]
-    1|234|57 [done @ depth 6]
-5:
-    24|567 [done @ depth 10]
-    1|4|567 [done @ depth 14]
-    1|24|57 [done @ depth 0]
-    1|234|7 [done @ depth 12]
-4:
-    4|567 [done @ depth 18]
-    24|57 [done @ depth 2]
-    1|567 [done @ depth 14]
-    1|4|57 [done @ depth 4]
-    1|24|7 [done @ depth 9]
-3:
-    4|57 [done @ depth 0]
-    1|57 [done @ depth 0]
-    1|4|7 [done @ depth 26]
-2:
-    4|7 [self-evident]
-    1|7 [no termination by depth 100+... :)]
+### 7 VERTICES ###
+[x] 1|234|567 
+    D = 20
+    #BOXES = 89247
 
+### 6 VERTICES ###
+[x] 
+    234|567 
+    D = 24
+    #BOXES = 180267
+[x] 
+    1|24|567 
+    D = 22
+    #BOXES = 992549
+[ ] 
+    1|234|57 
+    D = ???
+    #BOXES = ??? 
+
+### 5 VERTICES ###
+[ ] 
+    24|567 
+    D = ???
+    #BOXES = ???
+[*]
+    1|4|567 
+    D = 14
+    #BOXES = 39649
+[x]
+    1|24|57 
+    D = 16
+    #BOXES = 46175
+[x]
+    1|234|7 
+    D = 12
+    #BOXES = 12793
+
+### 4 VERTICES ###
+[x]
+    4|567 
+    D = 18
+    #BOXES = 26639
+[x]
+    24|57 
+    D = 17
+    #BOXES = 116523
+[x]
+    1|567 
+    D = 14
+    #BOXES = 32465
+[x]
+    1|4|57 
+    D = 14
+    #BOXES = 35825
+[x]
+    1|24|7 
+    D = 17
+    #BOXES = 20405
+
+### 3 VERTICES ###
+[F]
+    4|57 
+    D > 100
+    feasible
+[x]
+    1|57 
+    D = 2
+    #BOXES = 5797
+[x]
+    1|4|7 
+    D = 26
+    #BOXES = 23043
+
+### 2 VERTICES ###
+[x] 
+    4|7 
+    bipartite graph
+[F]
+    1|7
+    D > 100
+    feasible
