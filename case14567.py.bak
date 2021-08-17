@@ -1,4 +1,4 @@
-# case 4|567
+# case 1|4|567
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -31,40 +31,53 @@ def is_feasible(mu, nu, a4, a6):
         return False
     
     # again, weight sum cannot exceed 1; 
-    # apply formulas for other ai's, fi's, gi's
+    # formulas for ai's, fi's, and gi's...
     
     a5 = a2_assume234(a6, mn, v)
     asum = (asum + a5) & UNIT_INT
     if asum == NULL_INT:
         return False
     
-    a7 = a4_assumeN2347(a6, mn, v) & (1-asum) & UNIT_INT
-    
-    if a7 == NULL_INT:
+    a7 = a4_assume1234(a6, mn, v)
+    asum = (asum + a7) & UNIT_INT
+    if asum == NULL_INT:
         return False
     
     f6, g6 = fg3_assume23(mu, nu, a6, mn, v, g_pos = False)
     f5, g5 = fg2_assume23(mu, nu, a6, f6, g6, g_pos = False)
     f7, g7 = fg4_assume234(mu, nu, a5, f5, f6, g5, g6, g_pos = False)
+    f1, g1 = fg1_assume124(mu, nu, a7, f5, f7, g5, g7)
+    
+    if f1 == NULL_INT:
+        return False
+    if g1 == NULL_INT:
+        return False
     
     
-    # since mu*f7 = a4*f4 and same for nu, g...
+    f4, g4 = fg3_assume23(mu, nu, a4, mn, v)
+    f1top, g1top = fg2_assume23(mu, nu, a4, f4, g4)
+    f1 = f1 & f1top
+    g1 = g1 & g1top
     
-    f4 = (mu*f7/a4) & UNIT_INT
-    g4 = (nu*g7/a4) & GEQ_ONE
+    if f1 == NULL_INT:
+        return False
+    if g1 == NULL_INT:
+        return False
     
+    a1 = (1 - asum) & UNIT_INT
+    avec = [a1, 0, 0, a4, a5, a6, a7]
     
-    # density equals sum of square of eigenvalues
+    # the sum of squares of eigenvalues equals 
+    # the graph edge density
     
-    avec = [0, 0, 0, a4, a5, a6, a7]
     if not density_feasible(mu, nu, avec):
         return False
     
     
-    # double-check the eigenvector eq'ns
+    # formulas for f1, g1, ..., f7, g7 must hold
     
-    fvec = [None, None, None, f4, f5, f6, f7]
-    gvec = [None, None, None, g4, g5, g6, g7]
+    fvec = [f1, None, None, f4, f5, f6, f7]
+    gvec = [g1, None, None, g4, g5, g6, g7]
     
     if not fg_row_feasible(mu, nu, fvec, gvec, avec):
         return False
@@ -107,18 +120,18 @@ curr_depth = -1
 curr_size = 0
 next_size = case_queue.qsize()
 
-print('trying case 4|567 ...')
+print 'trying case 1|4|567 ...'
 
 ctr = 0
 
-while not case_queue.empty():
+while not case_queue.empty() and curr_depth < MAX_DEPTH:
     (M,Mdenom, N,Ndenom, A4,A4denom, A6,A6denom, depth) = case_queue.get()
     if depth != curr_depth:
         curr_depth = depth
         curr_size = next_size
         ctr += curr_size
         next_size = 0
-        print('\ton depth =', curr_depth, '...', 'size =', curr_size, '...', 'so far', ctr, '...')
+        print '\ton depth =', curr_depth, '...', 'size =', curr_size, '...', 'so far', ctr, '...'
         
     
     mu = interval[M, M+1] / interval(Mdenom)
@@ -146,5 +159,8 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A4, A4denom, A6, A6denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A4, A4denom, A6, A6denom, depth+1) )
 
-print('infeasible\n')
+if case_queue.empty():
+    print 'infeasible\n'
+else:
+    print 'feasible\n'
 

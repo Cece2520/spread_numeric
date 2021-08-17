@@ -1,4 +1,3 @@
-# case 1|57
 
 from interval import interval, inf, imath, fpu
 from casework_helper import *
@@ -9,7 +8,7 @@ import queue
 # numerically attempts to rule out solutions to 
 # the constraints, falling into the given intervals
 
-def is_feasible(mu, nu, a1, a5):
+def is_feasible(mu, nu, a1, a7):
     
     # first, we ignore cases that cannot exceed
     # the conjectured optimum of 2/sqrt(3)
@@ -23,38 +22,41 @@ def is_feasible(mu, nu, a1, a5):
     mn = mu*nu
     
     
-    # ignore cases where weight sum exceeds 1
-    # again, weight sum cannot exceed 1; 
-    # apply formulas for other ai's, fi's, gi's
+    # ignore cases where weight sum isn't 1
     
-    f5, g5 = fg2_assume2N4(mu, nu, a5, mn, v, g_pos = False)
-    f7, g7 = fg4_assume2N4(mu, nu, a5, f5, g5, g_pos = False)
+    asum = (a1+a7) & interval(1)
     
-    if f7 == NULL_INT:
-        return False
-    if g7 == NULL_INT:
+    if asum == NULL_INT:
         return False
     
-    a7 = a4_assume12N4(a5, mn, v)
-    asum = (a5+a7) & UNIT_INT
-    a1 = a1 & (1-asum) & UNIT_INT
     
-    if a1 == NULL_INT:
-        return False
+    # formulas for fi's, gi's
     
-    f1, g1 = fg1_assume124(mu, nu, a7, f5, f7, g5, g7)
+    avec = [a1, 0, 0, 0, 0, 0, a7]
     
-    # density equals sum of square of eigenvalues
     
-    avec = [a1, 0, 0, 0, a5, 0, a7]
+    # the sum of squares of eigenvalues equals 
+    # the graph edge density
+    
     if not density_feasible(mu, nu, avec):
         return False
     
     
-    # double-check the eigenvector eq'ns
+    # formulas for f1, g1, ..., f7, g7 must hold
     
-    fvec = [f1, None, None, None, f5, None, f7]
-    gvec = [g1, None, None, None, g5, None, g7]
+    f7, g7 = fg3_assume23(mu, nu, a7, mn, v, g_pos = False)
+    f1, g1 = fg2_assume23(mu, nu, a7, f7, g7)
+    
+    if f1 == NULL_INT:
+        return False
+    if g1 == NULL_INT:
+        return False
+    
+    
+    # check eigenvector equations
+    
+    fvec = [f1, None, None, None, None, None, f7]
+    gvec = [g1, None, None, None, None, None, g7]
     
     if not fg_row_feasible(mu, nu, fvec, gvec, avec):
         return False
@@ -71,7 +73,7 @@ def is_feasible(mu, nu, a1, a5):
     return True
 
 
-# divide-and-conquer!  begin with a grid over (mu, nu, a1, a5)
+# divide-and-conquer!  begin with a grid over (mu, nu, a1, a7)
 # in the box [.65, 1] x [-.5, -.15] x [0, 1] x [0, 1]
 # subdivide by the stepsizes .05, .05, .1, .1, respective
 # queue up each box as a separate case, stored with depth term
@@ -85,24 +87,24 @@ case_queue = queue.Queue()
 Mdenom = 20
 Ndenom = 20
 A1denom = 10
-A5denom = 10
+A7denom = 10
 
 for M in range(7, 20):
     for N in range(-10, -3):
         for A1 in range(0, 10):
-            for A5 in range(0, 10-A1):
-                case_queue.put( (M,Mdenom, N,Ndenom, A1,A1denom, A5,A5denom, 0) )
+            for A7 in range(0, 10-A1):
+                case_queue.put( (M,Mdenom, N,Ndenom, A1,A1denom, A7,A7denom, 0) )
 
 curr_depth = -1
 curr_size = 0
-next_size = case_queue.qsize()
+next_size = 7*7*55
 
 ctr = 0
 
-print('trying case 1|57 ...')
+print('trying case 1|7 ...')
 
 while not case_queue.empty() and curr_depth < MAX_DEPTH:
-    (M,Mdenom, N,Ndenom, A1,A1denom, A5,A5denom, depth) = case_queue.get()
+    (M,Mdenom, N,Ndenom, A1,A1denom, A7,A7denom, depth) = case_queue.get()
     if depth != curr_depth:
         curr_depth = depth
         curr_size = next_size
@@ -114,27 +116,27 @@ while not case_queue.empty() and curr_depth < MAX_DEPTH:
     mu = interval[M, M+1] / interval(Mdenom)
     nu = interval[N, N+1] / interval(Ndenom)
     a1 = interval[A1, A1+1] / interval(A1denom)
-    a5 = interval[A5, A5+1] / interval(A5denom)
+    a7 = interval[A7, A7+1] / interval(A7denom)
     
     
-    if is_feasible(mu, nu, a1, a5):
+    if is_feasible(mu, nu, a1, a7):
         next_size += 2
         
         if depth % 4 == 0:
-            case_queue.put( (M,Mdenom, N,Ndenom, 2*A1, 2*A1denom, A5, A5denom, depth+1) )
-            case_queue.put( (M,Mdenom, N,Ndenom, 2*A1+1, 2*A1denom, A5, A5denom, depth+1) )
+            case_queue.put( (M,Mdenom, N,Ndenom, 2*A1, 2*A1denom, A7, A7denom, depth+1) )
+            case_queue.put( (M,Mdenom, N,Ndenom, 2*A1+1, 2*A1denom, A7, A7denom, depth+1) )
         
         if depth % 4 == 1:
-            case_queue.put( (M,Mdenom, N,Ndenom, A1, A5denom, 2*A5, 2*A5denom, depth+1) )
-            case_queue.put( (M,Mdenom, N,Ndenom, A1, A5denom, 2*A5+1, 2*A5denom, depth+1) )
+            case_queue.put( (M,Mdenom, N,Ndenom, A1, A1denom, 2*A7, 2*A7denom, depth+1) )
+            case_queue.put( (M,Mdenom, N,Ndenom, A1, A1denom, 2*A7+1, 2*A7denom, depth+1) )
         
         if depth % 4 == 2:
-            case_queue.put( (2*M,2*Mdenom, N,Ndenom, A1, A1denom, A5, A5denom, depth+1) )
-            case_queue.put( (2*M+1,2*Mdenom, N,Ndenom, A1, A1denom, A5, A5denom, depth+1) )
+            case_queue.put( (2*M,2*Mdenom, N,Ndenom, A1, A1denom, A7, A7denom, depth+1) )
+            case_queue.put( (2*M+1,2*Mdenom, N,Ndenom, A1, A1denom, A7, A7denom, depth+1) )
         
         if depth % 4 == 3:
-            case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A1, A1denom, A5, A5denom, depth+1) )
-            case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A1, A1denom, A5, A5denom, depth+1) )
+            case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A1, A1denom, A7, A7denom, depth+1) )
+            case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A1, A1denom, A7, A7denom, depth+1) )
 
 if case_queue.empty():
     print('infeasible\n')

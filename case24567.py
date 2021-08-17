@@ -113,7 +113,7 @@ curr_depth = -1
 curr_size = 0
 next_size = case_queue.qsize()
 
-print 'trying case 24|567 ...'
+print('trying case 24|567 ...')
 
 ctr = 0
 
@@ -124,7 +124,7 @@ while not case_queue.empty():
         curr_size = next_size
         ctr += curr_size
         next_size = 0
-        print '\ton depth =', curr_depth, '...', 'size =', curr_size, '...', 'so far', ctr, '...'
+        print('\ton depth =', curr_depth, '...', 'size =', curr_size, '...', 'so far', ctr, '...')
         
     
     mu = interval[M, M+1] / interval(Mdenom)
@@ -152,5 +152,5 @@ while not case_queue.empty():
             case_queue.put( (M,Mdenom, 2*N,2*Ndenom, A2, A2denom, A6, A6denom, depth+1) )
             case_queue.put( (M,Mdenom, 2*N+1,2*Ndenom, A2, A2denom, A6, A6denom, depth+1) )
 
-print 'infeasible\n'
+print('infeasible\n')
 
