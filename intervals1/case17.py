@@ -110,7 +110,7 @@ while not case_queue.empty() and curr_depth < MAX_DEPTH:
         curr_size = next_size
         ctr += curr_size
         next_size = 0
-        print(('\ton depth =', curr_depth, '...', 'size =', curr_size, '...', 'so far', ctr, '...'))
+        print('\ton depth =', curr_depth, '...', 'size =', curr_size, '...', 'so far', ctr, '...')
         
     
     mu = interval[M, M+1] / interval(Mdenom)
