@@ -1,0 +1,16 @@
+CODE
+    [ ] Implement is-feasible functions
+    [ ] Implement case queueing function
+    [ ] Match is-feasible function to case
+    [ ] Script to test all cases
+
+READING
+    [ ] Section 4
+    [ ] Section 5 (A.1)
+    [ ] Section 5 (A.2)
+    [ ] Sectiob 5
+
+THINKING
+    [ ] Compile fun facts
+    [ ] Can simplify cases further?
+    [ ] Restrict lambda_max
