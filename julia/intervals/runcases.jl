@@ -144,6 +144,8 @@ CASES = (
     ("1|2|3|4|5|6|7", is_feasible_1234567)
 )
 
+# test_case("COUNTING", is_feasible_123457)
+
 is_case_feasible = zeros(length(CASES))
 for ((case_name, case_func), i) = zip(CASES, 1:length(CASES))
     is_case_feasible[i] = test_case(case_name, case_func)
@@ -155,6 +157,26 @@ for i = 1:length(CASES)
     println("Case $(lpad(CASES[i][1],13)) is considered $(lpad(is_case_feasible[i] == 1 ? "FEASIBLE" : "INFEASIBLE", 10))")
 end
 println(" =============================================================== ")
+
+
+### DEBUGGING ###
+# Number of boxes checked
+# Case 2457   :  Julia (53037)  Python (39311)
+# Case 24567  :  Julia (791237) Python (518381)
+# Case 234567 :  Julia (154917) Python (107193)
+# Case 157    :  Julia (6767)   Python (5715)
+# Case 1567   :  Julia (24915)  Python (24875)
+# Case 147    :  Julia (35599)  Python (23043)
+# Case 1457   :  Julia (33181)  Python (33635)   (*)?
+# Case 14567  :  Julia (35201)  Python (35073)
+# Case 1247   :  Julia (21807)  Python (20211)
+# Case 12457  :  Julia (55847)  Python (44743)
+# Case 124567 :  Julia (131337) Python (120127)
+# Case 12347  :  Julia (10211)  Python (10107)
+# Case 123457 :  Julia (208900) Python (243619)  (***)
+# Case 1234567:  Julia (79397)  Python (68085)
+# Cases 17, 457, 4567 OKAY
+
 
 
 # Replacement strings for changing py to jl

@@ -54,7 +54,7 @@ end
 
 function a47_assume2457(a1,a2,a3,a5,a6,mu,nu,fvec,gvec)
 
-    asum = intersect(interval(2)-a1-a2-a3-a5-a6, UNIT_INT)
+    asum = intersect(interval(1)-a1-a2-a3-a5-a6, UNIT_INT)
     
     a4num_f = asum*fvec[7] - mu*(fvec[2]-fvec[5])
     a4num_g = asum*gvec[7] - nu*(gvec[2]-gvec[5])
@@ -202,40 +202,28 @@ end
 
 function fg_ineq_feasible(fvec,gvec)
 
-    if (fvec[1] != nothing) && (fvec[2] != nothing)
-        if isdisjoint(fvec[1]-fvec[2], POS)
-            return false
-        end
+    if (fvec[1] != nothing) && (fvec[2] != nothing) && isdisjoint(fvec[1]-fvec[2], POS)
+        return false
     end
 
-    if (gvec[1] != nothing) && (gvec[2] != nothing)
-        if isdisjoint(gvec[2]-gvec[1], POS)
-            return false
-        end
+    if (gvec[1] != nothing) && (gvec[2] != nothing) && isdisjoint(gvec[2]-gvec[1], POS)
+        return false
     end
 
-    if (fvec[3] != nothing) && (fvec[4] != nothing)
-        if isdisjoint(fvec[3]-fvec[4], POS)
-            return false
-        end
+    if (fvec[3] != nothing) && (fvec[4] != nothing) && isdisjoint(fvec[3]-fvec[4], POS)
+        return false
     end  
 
-    if (gvec[3] != nothing) && (gvec[4] != nothing)
-        if isdisjoint(gvec[4]-gvec[3], POS)
-            return false
-        end
+    if (gvec[3] != nothing) && (gvec[4] != nothing) && isdisjoint(gvec[4]-gvec[3], POS)
+        return false
     end
 
-    if (fvec[6] != nothing) && (fvec[7] != nothing)
-        if isdisjoint(fvec[6]-fvec[7], POS)
-            return false
-        end
+    if (fvec[6] != nothing) && (fvec[7] != nothing) && isdisjoint(fvec[6]-fvec[7], POS)
+        return false
     end
 
-    if (gvec[6] != nothing) && (gvec[7] != nothing)
-        if isdisjoint(gvec[6]-gvec[7], POS) ### is negative compared to rest???
-            return false
-        end
+    if (gvec[6] != nothing) && (gvec[7] != nothing) && isdisjoint(gvec[6]-gvec[7], POS)
+        return false
     end
 
     return true
@@ -328,7 +316,7 @@ function fg_row_feasible1(mu, nu, fvec, gvec, avec)
             fsum1 = sum1_coeffs[i] * fvec[1]
             gsum1 = sum1_coeffs[i] * gvec[1]
             for j = J_INDICES_TO_COMPUTE_2[i]
-                if not fvec[j] == nothing
+                if fvec[j] != nothing
                     fsum1 += avec[j]*(fvec[j]-fvec[1])
                     gsum1 += avec[j]*(gvec[j]-gvec[1])
                 end
@@ -350,198 +338,108 @@ end
 # Uses the formulas a_4 = 1 - sum_{i \ne 4} a_i
 # and a_7 = 1 - sum_{i \ne 7} a_i
 
-# function fg_row_feasible47(mu, nu, fvec, gvec, avec) ### TODO ###
+function fg_row_feasible47(mu, nu, fvec, gvec, avec)
 
-#     J_INDICES_TO_COMPUTE = (
-#         (1,2,3,4,5,6,7),
-#         (1,2,3,5,6,7),
-#         (1,2,5,6,7),
-#         (1,5,6,7),
-#         (1,2,3,4,5,6),
-#         (1,2,3,4,5),
-#         (1,2,3,4)
-#     )
+    J_INDICES_TO_COMPUTE = (
+        (1,2,3,4,5,6,7),
+        (1,2,3,5,6,7),
+        (1,2,5,6,7),
+        (1,5,6,7),
+        (1,2,3,4,5,6),
+        (1,2,3,4,5),
+        (1,2,3,4)
+    )
 
-#     J_INDICES_TO_COMPUTE_2 = (
-#         (2,3,4,5,6,7),
-#         (2,3,5,6,7),
-#         (2,5,6,7),
-#         (5,6,7),
-#         (2,3,4,5,6),
-#         (2,3,4,5),
-#         (2,3,4)
-#     )
+    J_INDICES_TO_COMPUTE_4 = (
+        (1,2,3,5,6,7),
+        (),
+        (),
+        (),
+        (1,2,3,5,6),
+        (1,2,3,5),
+        (1,2,3)
+    )
 
-#     sum4_coeffs = (
-#         1,
-#         (1-avec[4]),
-#         (1-avec[3]-avec[4]),
-#         (1-avec[2]-avec[3]-avec[4]),
-#         (1-avec[7]),
-#         (1-avec[6]-avec[7]),
-#         (1-avec[5]-avec[6]-avec[7])
-#     )
+    J_INDICES_TO_COMPUTE_7 = (
+        (1,2,3,4,5,6),
+        (1,2,3,5,6),
+        (1,2,5,6),
+        (1,5,6),
+        (),
+        (),
+        ()
+    )
 
-#     sum7_coeffs = (
-#         1,
-#         (1-avec[4]),
-#         (1-avec[3]-avec[4]),
-#         (1-avec[2]-avec[3]-avec[4]),
-#         (1-avec[7]),
-#         (1-avec[6]-avec[7]),
-#         (1-avec[5]-avec[6]-avec[7])
-#     )
+    sum4_coeffs = (
+        1,
+        0,
+        0,
+        0,
+        1-avec[7],
+        1-avec[6]-avec[7],
+        1-avec[5]-avec[6]-avec[7]
+    )
+
+    sum7_coeffs = (
+        1,
+        1-avec[4],
+        1-avec[3]-avec[4],
+        1-avec[2]-avec[3]-avec[4],
+        0,
+        0,
+        0
+    )
+
+    SHOULD_SUM4 = (1,0,0,0,1,1,1)
+    SHOULD_SUM7 = (1,1,1,1,0,0,0)
     
-#     for i = 1:7
-#         if fvec[i] != nothing
-#             fsum = interval(0)
-#             gsum = interval(0)
-#             for j = J_INDICES_TO_COMPUTE[i]
-#                 if fvec[j] != nothing
-#                     fsum += avec[j]*fvec[j]
-#                     gsum += avec[j]*gvec[j]
-#                 end
-#             end
-#             fsum4 = fvec[3]
-#             gsum4 = gvec[3]
-#             for j in [0,1,2,4,5,6]
-#                 if not fvec[j] == nothing
-#                     fsum4 += avec[j]*(fvec[j]-fvec[3])
-#                     gsum4 += avec[j]*(gvec[j]-gvec[3])
-#                 end
-#             end
-#             fsum7 = fvec[6]
-#             gsum7 = gvec[6]
-#             for j in [0,1,2,3,4,5]
-#                 if not fvec[j] == nothing
-#                     fsum7 += avec[j]*(fvec[j]-fvec[6])
-#                     gsum7 += avec[j]*(gvec[j]-gvec[6])
-#                 end
-#             end
-#             if (fsum & (fsum4 & fsum7)) & (mu*fvec[0]) == NULL_INT
-#                 return false
-#             end
-#             if (gsum & (gsum4 & gsum7)) & (nu*gvec[0]) == NULL_INT
-#                 return false
-#             end
-#         end
-#     end
+    for i = 1:7
+        if fvec[i] != nothing
 
-    
-#     if not fvec[1] == nothing
-#         fsum = interval(0)
-#         gsum = interval(0)
-#         for j in [0,1,2,4,5,6]:
-#             if not fvec[j] == nothing
-#                 fsum += avec[j]*fvec[j]
-#                 gsum += avec[j]*gvec[j]
-#         fsum7 = (1-avec[3])*fvec[6]
-#         gsum7 = (1-avec[3])*gvec[6]
-#         for j in [0,1,2,4,5]:
-#             if not fvec[j] == nothing
-#                 fsum7 += avec[j]*(fvec[j]-fvec[6])
-#                 gsum7 += avec[j]*(gvec[j]-gvec[6])
-#         if (fsum & fsum7) & (mu*fvec[1]) == NULL_INT:
-#             return false
-#         if (gsum & gsum7) & (nu*gvec[1]) == NULL_INT:
-#             return false
+            fsum = interval(0)
+            gsum = interval(0)
+            for j = J_INDICES_TO_COMPUTE[i]
+                if fvec[j] != nothing
+                    fsum += avec[j]*fvec[j]
+                    gsum += avec[j]*gvec[j]
+                end
+            end
+            if isdisjoint(fsum, mu*fvec[i]) || isdisjoint(gsum, nu*gvec[i])
+                return false
+            end
 
+            if SHOULD_SUM4[i] == 1
+                fsum4 = sum4_coeffs[i] * fvec[4]
+                gsum4 = sum4_coeffs[i] * gvec[4]
+                for j = J_INDICES_TO_COMPUTE_4[i]
+                    if fvec[j] != nothing
+                        fsum4 += avec[j]*(fvec[j]-fvec[4])
+                        gsum4 += avec[j]*(gvec[j]-gvec[4])
+                    end
+                end
+                if isdisjoint(fsum4, mu*fvec[i]) || isdisjoint(gsum4, nu*gvec[i])
+                    return false
+                end
+            end
+            
+            if SHOULD_SUM7[i] == 1
+                fsum7 = sum7_coeffs[i] * fvec[7]
+                gsum7 = sum7_coeffs[i] * gvec[7]
+                for j = J_INDICES_TO_COMPUTE_7[i]
+                    if fvec[j] != nothing
+                        fsum7 += avec[j]*(fvec[j]-fvec[7])
+                        gsum7 += avec[j]*(gvec[j]-gvec[7])
+                    end
+                end
+                if isdisjoint(fsum7, mu*fvec[i]) || isdisjoint(gsum7, nu*gvec[i])
+                    return false
+                end
+            end
+        end
+    end
     
-#     if not fvec[2] == nothing:
-#         fsum = interval(0)
-#         gsum = interval(0)
-#         for j in [0,1,4,5,6]:
-#             if not fvec[j] == nothing:
-#                 fsum += avec[j]*fvec[j]
-#                 gsum += avec[j]*gvec[j]
-#         fsum7 = (1-avec[2]-avec[3])*fvec[6]
-#         gsum7 = (1-avec[2]-avec[3])*gvec[6]
-#         for j in [0,1,4,5]:
-#             if not fvec[j] == nothing:
-#                 fsum7 += avec[j]*(fvec[j]-fvec[6])
-#                 gsum7 += avec[j]*(gvec[j]-gvec[6])
-#         if (fsum & fsum7) & (mu*fvec[2]) == NULL_INT:
-#             return false
-#         if (gsum & gsum7) & (nu*gvec[2]) == NULL_INT:
-#             return false
-    
-
-#     if not fvec[3] == nothing:
-#         fsum = interval(0)
-#         gsum = interval(0)
-#         for j in [0,4,5,6]:
-#             if not fvec[j] == nothing:
-#                 fsum += avec[j]*fvec[j]
-#                 gsum += avec[j]*gvec[j]
-#         fsum7 = (1-avec[1]-avec[2]-avec[3])*fvec[6]
-#         gsum7 = (1-avec[1]-avec[2]-avec[3])*gvec[6]
-#         for j in [0,4,5]:
-#             if not fvec[j] == nothing:
-#                 fsum7 += avec[j]*(fvec[j]-fvec[6])
-#                 gsum7 += avec[j]*(gvec[j]-gvec[6])
-#         if (fsum & fsum7) & (mu*fvec[3]) == NULL_INT:
-#             return false
-#         if (gsum & gsum7) & (nu*gvec[3]) == NULL_INT:
-#             return false
-    
-
-#     if not fvec[4] == nothing:
-#         fsum = interval(0)
-#         gsum = interval(0)
-#         for j in [0,1,2,3,4,5]:
-#             if not fvec[j] == nothing:
-#                 fsum += avec[j]*fvec[j]
-#                 gsum += avec[j]*gvec[j]
-#         fsum4 = (1-avec[6])*fvec[3]
-#         gsum4 = (1-avec[6])*gvec[3]
-#         for j in [0,1,2,4,5]:
-#             if not fvec[j] == nothing:
-#                 fsum4 += avec[j]*(fvec[j]-fvec[3])
-#                 gsum4 += avec[j]*(gvec[j]-gvec[3])
-#         if (fsum & fsum4) & (mu*fvec[4]) == NULL_INT:
-#             return false
-#         if (gsum & gsum4) & (nu*gvec[4]) == NULL_INT:
-#             return false
-    
-
-#     if not fvec[5] == nothing:
-#         fsum = interval(0)
-#         gsum = interval(0)
-#         for j in [0,1,2,3,4]:
-#             if not fvec[j] == nothing:
-#                 fsum += avec[j]*fvec[j]
-#                 gsum += avec[j]*gvec[j]
-#         fsum4 = (1-avec[5]-avec[6])*fvec[3]
-#         gsum4 = (1-avec[5]-avec[6])*gvec[3]
-#         for j in [0,1,2,4]:
-#             if not fvec[j] == nothing:
-#                 fsum4 += avec[j]*(fvec[j]-fvec[3])
-#                 gsum4 += avec[j]*(gvec[j]-gvec[3])
-#         if (fsum & fsum4) & (mu*fvec[5]) == NULL_INT:
-#             return false
-#         if (gsum & gsum4) & (nu*gvec[5]) == NULL_INT:
-#             return false
-    
-
-#     if not fvec[6] == nothing:
-#         fsum = interval(0)
-#         gsum = interval(0)
-#         for j in [0,1,2,3]:
-#             if not fvec[j] == nothing:
-#                 fsum += avec[j]*fvec[j]
-#                 gsum += avec[j]*gvec[j]
-#         fsum4 = (1-avec[4]-avec[5]-avec[6])*fvec[3]
-#         gsum4 = (1-avec[4]-avec[5]-avec[6])*gvec[3]
-#         for j in [0,1,2]:
-#             if not fvec[j] == nothing:
-#                 fsum4 += avec[j]*(fvec[j]-fvec[3])
-#                 gsum4 += avec[j]*(gvec[j]-gvec[3])
-#         if (fsum & fsum4) & (mu*fvec[6]) == NULL_INT:
-#             return false
-#         if (gsum & gsum4) & (nu*gvec[6]) == NULL_INT:
-#             return false
-    
-#     return true
+    return true
+end
 
 
 # Checks that the edge density is not less than 
@@ -549,7 +447,7 @@ end
 
 function density_feasible(mu, nu, avec)
     
-    d = 1-(avec[2]+avec[3])^2-(avec[5]+avec[6])^2 - 2*(avec[1]*avec[3]+avec[4]*avec[6])
+    d = 1-(avec[3]+avec[4])^2-(avec[6]+avec[7])^2 - 2*(avec[2]*avec[4]+avec[5]*avec[7])
     
     if isdisjoint(d-mu^2-nu^2, POS)
         return false
@@ -573,11 +471,7 @@ function norm_feasible(fvec, gvec, avec)
         end
     end
     
-    if isdisjoint(fnorm, interval(1))
-        return false
-    end
-    
-    if isdisjoint(gnorm, interval(1))
+    if isdisjoint(fnorm, interval(1)) || isdisjoint(gnorm, interval(1))
         return false
     end
     
@@ -675,10 +569,8 @@ end
 function ellipse_feasible(mu, nu, fvec, gvec, u)
     
     for i = 1:length(fvec)
-        if fvec[i] != nothing
-            if isdisjoint(mu*fvec[i]^2-nu*gvec[i]^2, u)
-                return false
-            end
+        if fvec[i] != nothing && isdisjoint(mu*fvec[i]^2-nu*gvec[i]^2, u)
+            return false
         end
     end
     
