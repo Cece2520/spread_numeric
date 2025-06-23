@@ -94,14 +94,14 @@ function a4_assume12N4(a2, mn, v)
 end
 
 
-function fg3_assume23(mu, nu, a3, mn, v, g_pos = true)
+function fg3_assume23(mu, nu, a3, mn, c, v, s, g_pos = true)
     
-    f3num = intersect((a3+2*nu)*mu, -POS)
-    g3num = intersect((a3+2*mu)*nu, -POS)
-    denom = intersect(a3*v + 2*mn, -POS)
+    f3num = intersect(s*(a3+2*nu)*mu, -POS)
+    g3num = intersect(s*(a3+2*mu)*nu, -POS)
+    denom = intersect((mu-nu)*(a3*v + 2*mn), -POS)
     
-    f3 = intersect( sqrt( intersect(f3num / denom, UNIT_INT)), UNIT_INT)
-    g3 = intersect( sqrt( intersect(g3num / denom, GEQ_ONE)), GEQ_ONE)
+    f3 = intersect( sqrt( intersect(f3num / (c * denom), UNIT_INT)), UNIT_INT)
+    g3 = intersect( sqrt( intersect(g3num / ((interval(1)-c) * denom), GEQ_ONE)), GEQ_ONE)
     
     if g_pos
         return f3, g3
@@ -143,14 +143,14 @@ function fg1_assume124(mu, nu, a4, f2, f4, g2, g4)
 end
 
 
-function fg2_assume2N4(mu, nu, a2, mn, v, g_pos = true)
+function fg2_assume2N4(mu, nu, a2, mn, c, v, s, g_pos = true)
     
-    f2num = intersect((a2-2*nu)*mu, POS)
-    g2num = intersect((a2-2*mu)*nu, POS)
-    denom = intersect(a2*v - 2*mn, POS)
+    f2num = intersect(s*(a2-2*nu)*mu, POS)
+    g2num = intersect(s*(a2-2*mu)*nu, POS)
+    denom = intersect((mu-nu)*(a2*v - 2*mn), POS)
     
-    f2 = intersect( sqrt( intersect(f2num / denom, GEQ_ONE)), GEQ_ONE)
-    g2 = intersect( sqrt( intersect(g2num / denom, UNIT_INT)), UNIT_INT)
+    f2 = intersect( sqrt( intersect(f2num / (c * denom), GEQ_ONE)), GEQ_ONE)
+    g2 = intersect( sqrt( intersect(g2num / ((interval(1) - c) * denom), UNIT_INT)), UNIT_INT)
     
     if g_pos
         return f2, g2
@@ -180,17 +180,21 @@ end
 
 # Checks that mu and nu satisfy the necessary inequalities
 
-function mu_nu_feasible(mu,nu,u)
+function mu_nu_feasible(mu,nu,u,s,c)
 
-    if isdisjoint(u - SPR_MAX, POS)
-        return false
-    end
+    # if isdisjoint(u - SPR_MAX, POS)
+    #     return false
+    # end
 
     if isdisjoint(SPR_UPP - u, POS)
         return false
     end
 
-    if isdisjoint( sqrt(mu*(interval(1)-mu)) + nu, POS)
+    # if isdisjoint( sqrt(mu*(interval(1)-mu)) + nu, POS)
+    #     return false
+    # end
+
+    if isdisjoint( sqrt(interval(1) - interval(2) * c + interval(2) * c^2) - s, POS)
         return false
     end
 
@@ -566,10 +570,10 @@ end
 
 # Checks the ellipse equations can be satisfied
 
-function ellipse_feasible(mu, nu, fvec, gvec, u)
+function ellipse_feasible(mu, nu, fvec, gvec, c, s)
     
     for i = 1:length(fvec)
-        if fvec[i] != nothing && isdisjoint(mu*fvec[i]^2-nu*gvec[i]^2, u)
+        if fvec[i] != nothing && isdisjoint(c*mu*fvec[i]^2 - (interval(1)-c)*nu*gvec[i]^2, s)
             return false
         end
     end

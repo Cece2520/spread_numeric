@@ -10,7 +10,7 @@ include("utils.jl")
 # case 1|7 via interval arithmetic and a divide and conquer
 # algorithm
 
-function is_feasible(mu, nu, a1, a7)
+function is_feasible_17(mu, nu, a1, a7, c)
     
     # We ignore cases that cannot exceed
     # the conjectured optimum of 2/sqrt(3),
@@ -22,8 +22,9 @@ function is_feasible(mu, nu, a1, a7)
     u = mu-nu
     v = mu+nu
     mn = mu*nu
+    s = c * v - nu
 
-    if !mu_nu_feasible(mu, nu, u)
+    if !mu_nu_feasible(mu, nu, u, s, c)
         return false
     end
     
@@ -44,7 +45,7 @@ function is_feasible(mu, nu, a1, a7)
     
     # Apply the relevant formulas for a_i, f_i, g_i
     
-    f7, g7 = fg3_assume23(mu, nu, a7, mn, v, false)
+    f7, g7 = fg3_assume23(mu, nu, a7, mn, c, v, s, false)
     f1, g1 = fg2_assume23(mu, nu, a7, f7, g7)
     
     if isempty(f1)
@@ -71,7 +72,7 @@ function is_feasible(mu, nu, a1, a7)
     if !norm_feasible(fvec, gvec, avec)
         return false
     end
-    if !ellipse_feasible(mu, nu, fvec, gvec, u)
+    if !ellipse_feasible(mu, nu, fvec, gvec, c, s)
         return false
     end
 
@@ -88,92 +89,92 @@ end
 # The halved dimension is chosen according to the 
 # congruence mod 4 of the depth
 
-function test17()
+# function test17()
 
-    print_specs("1|7")
-    println("=== Divide and Conquer! ===")
+#     print_specs("1|7")
+#     println("=== Divide and Conquer! ===")
 
-    case_queue = Queue{NTuple{9, Int64}}()
+#     case_queue = Queue{NTuple{9, Int64}}()
 
-    Mdenom = 20
-    Ndenom = 20
-    A1denom = 10
-    A7denom = 10
+#     Mdenom = 20
+#     Ndenom = 20
+#     A1denom = 10
+#     A7denom = 10
 
-    for M = 7:19
-        for N = -10:-2
-            for A1 in 0:9
-                for A7 = 0:(9-A1)
-                    enqueue!(case_queue, (M,Mdenom, N,Ndenom, A1,A1denom, A7,A7denom, 0))
-                end
-            end
-        end
-    end
+#     for M = 7:19
+#         for N = -10:-2
+#             for A1 in 0:9
+#                 for A7 = 0:(9-A1)
+#                     enqueue!(case_queue, (M,Mdenom, N,Ndenom, A1,A1denom, A7,A7denom, 0))
+#                 end
+#             end
+#         end
+#     end
 
-    curr_depth = -1
-    curr_size = 0
-    next_size = length(case_queue)
-    MAX_DEPTH = 50
+#     curr_depth = -1
+#     curr_size = 0
+#     next_size = length(case_queue)
+#     MAX_DEPTH = 50
 
-    ctr = 0
+#     ctr = 0
 
-    println("Attempting Case 1|7")
+#     println("Attempting Case 1|7")
 
-    while !isempty(case_queue) && curr_depth < MAX_DEPTH
-        (M,Mdenom, N,Ndenom, A1,A1denom, A7,A7denom, depth) = dequeue!(case_queue)
-        if depth != curr_depth
-            curr_depth = depth
-            curr_size = next_size
-            ctr += curr_size
-            next_size = 0
-            println("\t Current Depth is $(lpad(curr_depth,3))... There are $(lpad(curr_size,7)) Boxes Remaining...")
-        end
+#     while !isempty(case_queue) && curr_depth < MAX_DEPTH
+#         (M,Mdenom, N,Ndenom, A1,A1denom, A7,A7denom, depth) = dequeue!(case_queue)
+#         if depth != curr_depth
+#             curr_depth = depth
+#             curr_size = next_size
+#             ctr += curr_size
+#             next_size = 0
+#             println("\t Current Depth is $(lpad(curr_depth,3))... There are $(lpad(curr_size,7)) Boxes Remaining...")
+#         end
         
-        mu = interval(M, M+1) / interval(Mdenom)
-        nu = interval(N, N+1) / interval(Ndenom)
-        a1 = interval(A1, A1+1) / interval(A1denom)
-        a7 = interval(A7, A7+1) / interval(A7denom)
+#         mu = interval(M, M+1) / interval(Mdenom)
+#         nu = interval(N, N+1) / interval(Ndenom)
+#         a1 = interval(A1, A1+1) / interval(A1denom)
+#         a7 = interval(A7, A7+1) / interval(A7denom)
         
         
-        if is_feasible(mu, nu, a1, a7)
-            next_size += 2
+#         if is_feasible(mu, nu, a1, a7)
+#             next_size += 2
             
-            if depth % 4 == 0
-                enqueue!(case_queue, (M,Mdenom, N,Ndenom, 2*A1, 2*A1denom, A7, A7denom, depth+1) )
-                enqueue!(case_queue, (M,Mdenom, N,Ndenom, 2*A1+1, 2*A1denom, A7, A7denom, depth+1) )
-            end
+#             if depth % 4 == 0
+#                 enqueue!(case_queue, (M,Mdenom, N,Ndenom, 2*A1, 2*A1denom, A7, A7denom, depth+1) )
+#                 enqueue!(case_queue, (M,Mdenom, N,Ndenom, 2*A1+1, 2*A1denom, A7, A7denom, depth+1) )
+#             end
             
-            if depth % 4 == 1
-                enqueue!(case_queue, (M,Mdenom, N,Ndenom, A1, A1denom, 2*A7, 2*A7denom, depth+1) )
-                enqueue!(case_queue, (M,Mdenom, N,Ndenom, A1, A1denom, 2*A7+1, 2*A7denom, depth+1) )
-            end
+#             if depth % 4 == 1
+#                 enqueue!(case_queue, (M,Mdenom, N,Ndenom, A1, A1denom, 2*A7, 2*A7denom, depth+1) )
+#                 enqueue!(case_queue, (M,Mdenom, N,Ndenom, A1, A1denom, 2*A7+1, 2*A7denom, depth+1) )
+#             end
             
-            if depth % 4 == 2
-                enqueue!(case_queue, (2*M,2*Mdenom, N,Ndenom, A1, A1denom, A7, A7denom, depth+1) )
-                enqueue!(case_queue, (2*M+1,2*Mdenom, N,Ndenom, A1, A1denom, A7, A7denom, depth+1) )
-            end
+#             if depth % 4 == 2
+#                 enqueue!(case_queue, (2*M,2*Mdenom, N,Ndenom, A1, A1denom, A7, A7denom, depth+1) )
+#                 enqueue!(case_queue, (2*M+1,2*Mdenom, N,Ndenom, A1, A1denom, A7, A7denom, depth+1) )
+#             end
             
-            if depth % 4 == 3
-                enqueue!(case_queue, (M,Mdenom, 2*N,2*Ndenom, A1, A1denom, A7, A7denom, depth+1) )
-                enqueue!(case_queue, (M,Mdenom, 2*N+1,2*Ndenom, A1, A1denom, A7, A7denom, depth+1) )
-            end
-        end
-    end
+#             if depth % 4 == 3
+#                 enqueue!(case_queue, (M,Mdenom, 2*N,2*Ndenom, A1, A1denom, A7, A7denom, depth+1) )
+#                 enqueue!(case_queue, (M,Mdenom, 2*N+1,2*Ndenom, A1, A1denom, A7, A7denom, depth+1) )
+#             end
+#         end
+#     end
 
-    curr_depth += 1
-    next_size = length(case_queue)
+#     curr_depth += 1
+#     next_size = length(case_queue)
 
-    if isempty(case_queue)
-        print("\t Current Depth is $(lpad(curr_depth,3)) ... There are $(lpad(next_size,7)) Boxes Remaining...\n")
-        println("Case 1|7 is Not Yet Infeasible! A Total of $ctr Boxes Were Considered...")
-    else
-        print("\t Current Depth is $(lpad(curr_depth,3)) ... There are $(lpad(next_size,7)) Boxes Remaining...\n")
-        println("Case 1|7 is Infeasible! A Total of $ctr Boxes Were Considered...")
-    end
+#     if isempty(case_queue)
+#         print("\t Current Depth is $(lpad(curr_depth,3)) ... There are $(lpad(next_size,7)) Boxes Remaining...\n")
+#         println("Case 1|7 is Not Yet Infeasible! A Total of $ctr Boxes Were Considered...")
+#     else
+#         print("\t Current Depth is $(lpad(curr_depth,3)) ... There are $(lpad(next_size,7)) Boxes Remaining...\n")
+#         println("Case 1|7 is Infeasible! A Total of $ctr Boxes Were Considered...")
+#     end
 
-    println("=== Termination Date and Time ===")
-    now = Dates.now()
-    println("Current Date and Time: $now")
-end
+#     println("=== Termination Date and Time ===")
+#     now = Dates.now()
+#     println("Current Date and Time: $now")
+# end
 
-test17()
+# test17()

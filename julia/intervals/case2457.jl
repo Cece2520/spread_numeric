@@ -8,7 +8,7 @@ include("utils.jl")
 # case 24|57 via interval arithmetic and a divide and conquer
 # algorithm
 
-function is_feasible_2457(mu, nu, a2, a5)
+function is_feasible_2457(mu, nu, a2, a5, c)
     
     # We ignore cases that cannot exceed
     # the conjectured optimum of 2/sqrt(3),
@@ -20,8 +20,9 @@ function is_feasible_2457(mu, nu, a2, a5)
     u = mu-nu
     v = mu+nu
     mn = mu*nu
+    s = c * v - nu
 
-    if !mu_nu_feasible(mu, nu, u)
+    if !mu_nu_feasible(mu, nu, u, s, c)
         return false
     end
     
@@ -34,14 +35,14 @@ function is_feasible_2457(mu, nu, a2, a5)
         return false
     end
 
-    f2, g2 = fg2_assume2N4(mu, nu, a2, mn, v)
+    f2, g2 = fg2_assume2N4(mu, nu, a2, mn, c, v, s)
     f4, g4 = fg4_assume2N4(mu, nu, a2, f2, g2)
     
     if isempty(f4) || isempty(g4)
         return false
     end
     
-    f5, g5 = fg2_assume2N4(mu, nu, a5, mn, v, false)
+    f5, g5 = fg2_assume2N4(mu, nu, a5, mn, c, v, s, false)
     f7, g7 = fg4_assume2N4(mu, nu, a5, f5, g5, false)
     
     if isempty(f7) || isempty(g7)
@@ -87,7 +88,7 @@ function is_feasible_2457(mu, nu, a2, a5)
     if !norm_feasible47(fvec, gvec, avec)
         return false
     end
-    if !ellipse_feasible(mu, nu, fvec, gvec, u)
+    if !ellipse_feasible(mu, nu, fvec, gvec, c, s)
         return false
     end
 

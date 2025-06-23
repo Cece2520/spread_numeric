@@ -33,7 +33,7 @@ include("case1234567.jl")
 # The halved dimension is chosen according to the 
 # congruence mod 4 of the depth
 
-function test_case(case, feas_func)
+function test_case(case, feas_func, c)
 
     print_specs(case)
     println("=== Divide and Conquer! ===")
@@ -80,7 +80,7 @@ function test_case(case, feas_func)
         ahigh = interval(Ahigh, Ahigh+1) / interval(Ahigh_denom)
         
         
-        if feas_func(mu, nu, alow, ahigh)
+        if feas_func(mu, nu, alow, ahigh, c)
             next_size += 2
             
             if depth % 4 == 0
@@ -124,6 +124,105 @@ function test_case(case, feas_func)
     return is_feasible
 end
 
+function test_case_with_c(case, feas_func)
+
+    print_specs(case)
+    println("=== Divide and Conquer! ===")
+
+    case_queue = Queue{NTuple{11, Int64}}()
+
+    Mdenom = 20
+    Ndenom = 20
+    Alow_denom = 10
+    Ahigh_denom = 10
+    C = 0
+    Cdenom = 1
+
+    for M = 7:19
+        for N = -10:-4
+            for Alow in 0:9
+                for Ahigh = 0:(9-Alow)
+                    enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow,Alow_denom, Ahigh,Ahigh_denom, C, Cdenom, 0))
+                end
+            end
+        end
+    end
+
+    curr_depth = -1
+    curr_size = 0
+    next_size = length(case_queue)
+    MAX_DEPTH = 50
+
+    ctr = 0
+
+    println("Attempting Case $case")
+
+    while !isempty(case_queue) && curr_depth < MAX_DEPTH
+        (M,Mdenom, N,Ndenom, Alow,Alow_denom, Ahigh,Ahigh_denom, C, Cdenom, depth) = dequeue!(case_queue)
+        if depth != curr_depth
+            curr_depth = depth
+            curr_size = next_size
+            ctr += curr_size
+            next_size = 0
+            println("\t Current Depth is $(lpad(curr_depth,3))... There are $(lpad(curr_size,7)) Boxes Remaining...")
+        end
+        
+        mu = interval(M, M+1) / interval(Mdenom)
+        nu = interval(N, N+1) / interval(Ndenom)
+        alow = interval(Alow, Alow+1) / interval(Alow_denom)
+        ahigh = interval(Ahigh, Ahigh+1) / interval(Ahigh_denom)
+        c = interval(C, C+1) / interval(Cdenom)
+        
+        if feas_func(mu, nu, alow, ahigh, c)
+            next_size += 2
+            
+            if depth % 5 == 0
+                enqueue!(case_queue, (M,Mdenom, N,Ndenom, 2*Alow, 2*Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
+                enqueue!(case_queue, (M,Mdenom, N,Ndenom, 2*Alow+1, 2*Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
+            end
+            
+            if depth % 5 == 1
+                enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow, Alow_denom, 2*Ahigh, 2*Ahigh_denom, C, Cdenom, depth+1) )
+                enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow, Alow_denom, 2*Ahigh+1, 2*Ahigh_denom,C, Cdenom, depth+1) )
+            end
+            
+            if depth % 5 == 2
+                enqueue!(case_queue, (2*M,2*Mdenom, N,Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
+                enqueue!(case_queue, (2*M+1,2*Mdenom, N,Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
+            end
+            
+            if depth % 5 == 3
+                enqueue!(case_queue, (M,Mdenom, 2*N,2*Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
+                enqueue!(case_queue, (M,Mdenom, 2*N+1,2*Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
+            end
+
+            if depth % 5 == 4
+                enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, 2*C, 2*Cdenom, depth+1) )
+                enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, 2*C+1, 2*Cdenom, depth+1) )
+            end
+        end
+    end
+
+    curr_depth += 1
+    next_size = length(case_queue)
+
+    if !isempty(case_queue)
+        print("\t Current Depth is $(lpad(curr_depth,3)) ... There are $(lpad(next_size,7)) Boxes Remaining...\n")
+        println("Case $case is Not Yet Infeasible! A Total of $ctr Boxes Were Considered...")
+    else
+        print("\t Current Depth is $(lpad(curr_depth,3)) ... There are $(lpad(next_size,7)) Boxes Remaining...\n")
+        println("Case $case is Infeasible! A Total of $ctr Boxes Were Considered...")
+    end
+
+    println("=== Termination Date and Time ===")
+    now = Dates.now()
+    println("Current Date and Time: $now")
+
+    is_feasible = !isempty(case_queue)
+    return is_feasible
+end
+
+
 CASES = (
     ("1|7", is_feasible_17),
     ("1|4|7", is_feasible_147),
@@ -141,23 +240,30 @@ CASES = (
     ("1|234|57", is_feasible_123457),
     ("1|24|567", is_feasible_124567),
     ("234|567", is_feasible_234567),
-    ("1|2|3|4|5|6|7", is_feasible_1234567)
+    ("1|234|567", is_feasible_1234567)
 )
 
-# test_case("COUNTING", is_feasible_123457)
+function test_all(cstart, cend, breakpoints)
+    # test_case("COUNTING", is_feasible_123457)
+    C_BREAKPOINTS = breakpoints
+    C_START = cstart
+    C_END = cend
+    c_intervals = [interval(i,j) for (i,j) = zip([C_START; C_BREAKPOINTS], [C_BREAKPOINTS; C_END])]
 
-is_case_feasible = zeros(length(CASES))
-for ((case_name, case_func), i) = zip(CASES, 1:length(CASES))
-    is_case_feasible[i] = test_case(case_name, case_func)
+    for c_inter = c_intervals
+        is_case_feasible = zeros(length(CASES))
+        for ((case_name, case_func), i) = zip(CASES, 1:length(CASES))
+            is_case_feasible[i] = test_case(case_name, case_func, c_inter)
+        end
+
+        println()
+        println(" =========================== RESULTS: C = $c_inter =========================== ")
+        for i = 1:length(CASES)
+            println("Case $(lpad(CASES[i][1],9)) is considered $(lpad(is_case_feasible[i] == 1 ? "FEASIBLE" : "INFEASIBLE", 10))")
+        end
+        println(" =============================================================== ")
+    end
 end
-
-println()
-println(" =========================== RESULTS =========================== ")
-for i = 1:length(CASES)
-    println("Case $(lpad(CASES[i][1],13)) is considered $(lpad(is_case_feasible[i] == 1 ? "FEASIBLE" : "INFEASIBLE", 10))")
-end
-println(" =============================================================== ")
-
 
 ### DEBUGGING ###
 # Number of boxes checked

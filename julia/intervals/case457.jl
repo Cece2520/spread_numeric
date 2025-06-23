@@ -7,7 +7,7 @@ include("utils.jl")
 # case 4|57 via interval arithmetic and a divide and conquer
 # algorithm
 
-function is_feasible_457(mu, nu, a4, a5)
+function is_feasible_457(mu, nu, a4, a5, c)
     
     # We ignore cases that cannot exceed
     # the conjectured optimum of 2/sqrt(3),
@@ -19,15 +19,16 @@ function is_feasible_457(mu, nu, a4, a5)
     u = mu-nu
     v = mu+nu
     mn = mu*nu
+    s = c * v - nu
 
-    if !mu_nu_feasible(mu, nu, u)
+    if !mu_nu_feasible(mu, nu, u, s, c)
         return false
     end
     
     # We ignore cases where the weight sum exceeds 1
     # Apply the relevant formulas for a_i, f_i, g_i
     
-    f5, g5 = fg2_assume2N4(mu, nu, a5, mn, v, false)
+    f5, g5 = fg2_assume2N4(mu, nu, a5, mn, c, v, s, false)
     f7, g7 = fg4_assume2N4(mu, nu, a5, f5, g5, false)
     
 
@@ -67,7 +68,7 @@ function is_feasible_457(mu, nu, a4, a5)
     if !norm_feasible(fvec, gvec, avec)
         return false
     end
-    if !ellipse_feasible(mu, nu, fvec, gvec, u)
+    if !ellipse_feasible(mu, nu, fvec, gvec, c, s)
         return false
     end
 
