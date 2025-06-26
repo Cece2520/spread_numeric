@@ -182,13 +182,19 @@ end
 
 function mu_nu_feasible(mu,nu,u,s,c)
 
-    # if isdisjoint(u - SPR_MAX, POS)
-    #     return false
-    # end
-
-    if isdisjoint(SPR_UPP - u, POS)
+    if isdisjoint(s - interval(1)/interval(2), POS)
         return false
     end
+
+    low_bound = (interval(2)*c - interval(1) + interval(2)*sqrt(interval(1) - c + c^2 ))/interval(3)
+
+    if isdisjoint(s - low_bound, POS)
+        return false
+    end
+
+    # if isdisjoint(SPR_UPP - u, POS)
+    #     return false
+    # end
 
     # if isdisjoint( sqrt(mu*(interval(1)-mu)) + nu, POS)
     #     return false

@@ -58,7 +58,7 @@ function test_case(case, feas_func, c)
     curr_depth = -1
     curr_size = 0
     next_size = length(case_queue)
-    MAX_DEPTH = 50
+    MAX_DEPTH = 40
 
     ctr = 0
 
@@ -135,14 +135,15 @@ function test_case_with_c(case, feas_func)
     Ndenom = 20
     Alow_denom = 10
     Ahigh_denom = 10
-    C = 0
-    Cdenom = 1
+    Cdenom = 20
 
-    for M = 7:19
-        for N = -10:-4
+    for M = 0:19
+        for N = -10:0
             for Alow in 0:9
                 for Ahigh = 0:(9-Alow)
-                    enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow,Alow_denom, Ahigh,Ahigh_denom, C, Cdenom, 0))
+                    for C = 15:19
+                        enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow,Alow_denom, Ahigh,Ahigh_denom, C, Cdenom, 0))
+                    end
                 end
             end
         end
@@ -173,30 +174,31 @@ function test_case_with_c(case, feas_func)
         ahigh = interval(Ahigh, Ahigh+1) / interval(Ahigh_denom)
         c = interval(C, C+1) / interval(Cdenom)
         
+        LOOP_LENGTH = 5
         if feas_func(mu, nu, alow, ahigh, c)
             next_size += 2
             
-            if depth % 5 == 0
+            if depth % LOOP_LENGTH == 0
                 enqueue!(case_queue, (M,Mdenom, N,Ndenom, 2*Alow, 2*Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
                 enqueue!(case_queue, (M,Mdenom, N,Ndenom, 2*Alow+1, 2*Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
             end
             
-            if depth % 5 == 1
+            if depth % LOOP_LENGTH == 1
                 enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow, Alow_denom, 2*Ahigh, 2*Ahigh_denom, C, Cdenom, depth+1) )
                 enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow, Alow_denom, 2*Ahigh+1, 2*Ahigh_denom,C, Cdenom, depth+1) )
             end
             
-            if depth % 5 == 2
+            if depth % LOOP_LENGTH == 2
                 enqueue!(case_queue, (2*M,2*Mdenom, N,Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
                 enqueue!(case_queue, (2*M+1,2*Mdenom, N,Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
             end
             
-            if depth % 5 == 3
+            if depth % LOOP_LENGTH == 3
                 enqueue!(case_queue, (M,Mdenom, 2*N,2*Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
                 enqueue!(case_queue, (M,Mdenom, 2*N+1,2*Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, C, Cdenom, depth+1) )
             end
 
-            if depth % 5 == 4
+            if depth % LOOP_LENGTH == 4
                 enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, 2*C, 2*Cdenom, depth+1) )
                 enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow, Alow_denom, Ahigh, Ahigh_denom, 2*C+1, 2*Cdenom, depth+1) )
             end
@@ -224,11 +226,11 @@ end
 
 
 CASES = (
-    ("1|7", is_feasible_17),
-    ("1|4|7", is_feasible_147),
-    ("1|57", is_feasible_157),
-    ("4|57", is_feasible_457),
-    ("1|24|7", is_feasible_1247),
+    # ("1|7", is_feasible_17),
+    # ("1|4|7", is_feasible_147),
+    # ("1|57", is_feasible_157),
+    # ("4|57", is_feasible_457),
+    # ("1|24|7", is_feasible_1247),
     ("1|4|57", is_feasible_1457),
     ("1|567", is_feasible_1567),
     ("24|57", is_feasible_2457),
@@ -236,12 +238,25 @@ CASES = (
     ("1|234|7", is_feasible_12347),
     ("1|24|57", is_feasible_12457),
     ("1|4|567", is_feasible_14567),
-    ("24|567", is_feasible_24567),
+    # ("24|567", is_feasible_24567),
     ("1|234|57", is_feasible_123457),
     ("1|24|567", is_feasible_124567),
     ("234|567", is_feasible_234567),
     ("1|234|567", is_feasible_1234567)
 )
+
+is_case_feasible = zeros(length(CASES))
+for ((case_name, case_func), i) = zip(CASES, 1:length(CASES))
+    is_case_feasible[i] = test_case_with_c(case_name, case_func)
+end
+
+println()
+println(" =========================== RESULTS =========================== ")
+for i = 1:length(CASES)
+    println("Case $(lpad(CASES[i][1],9)) is considered $(lpad(is_case_feasible[i] == 1 ? "FEASIBLE" : "INFEASIBLE", 10))")
+end
+println(" =============================================================== ")
+
 
 function test_all(cstart, cend, breakpoints)
     # test_case("COUNTING", is_feasible_123457)
