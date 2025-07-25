@@ -124,7 +124,7 @@ function test_case(case, feas_func, c)
     return is_feasible
 end
 
-function test_case_with_c(case, feas_func)
+function test_case_with_c(case, feas_func, Cdenom, Clow, Chigh)
 
     print_specs(case)
     println("=== Divide and Conquer! ===")
@@ -135,13 +135,13 @@ function test_case_with_c(case, feas_func)
     Ndenom = 20
     Alow_denom = 10
     Ahigh_denom = 10
-    Cdenom = 20
+    # Cdenom = 20
 
     for M = 0:19
         for N = -10:0
             for Alow in 0:9
                 for Ahigh = 0:(9-Alow)
-                    for C = 15:19
+                    for C = Clow:Chigh
                         enqueue!(case_queue, (M,Mdenom, N,Ndenom, Alow,Alow_denom, Ahigh,Ahigh_denom, C, Cdenom, 0))
                     end
                 end
@@ -152,7 +152,7 @@ function test_case_with_c(case, feas_func)
     curr_depth = -1
     curr_size = 0
     next_size = length(case_queue)
-    MAX_DEPTH = 50
+    MAX_DEPTH = 40
 
     ctr = 0
 
@@ -230,55 +230,77 @@ CASES = (
     # ("1|4|7", is_feasible_147),
     # ("1|57", is_feasible_157),
     # ("4|57", is_feasible_457),
-    # ("1|24|7", is_feasible_1247),
-    ("1|4|57", is_feasible_1457),
-    ("1|567", is_feasible_1567),
-    ("24|57", is_feasible_2457),
-    ("4|567", is_feasible_4567),
-    ("1|234|7", is_feasible_12347),
-    ("1|24|57", is_feasible_12457),
-    ("1|4|567", is_feasible_14567),
+    ("1|24|7", is_feasible_1247),
+    # ("1|4|57", is_feasible_1457),
+    # ("1|567", is_feasible_1567),
+    # ("24|57", is_feasible_2457),
+    # ("4|567", is_feasible_4567),
+    # ("1|234|7", is_feasible_12347),
+    # ("1|24|57", is_feasible_12457),
+    # ("1|4|567", is_feasible_14567),
     # ("24|567", is_feasible_24567),
-    ("1|234|57", is_feasible_123457),
-    ("1|24|567", is_feasible_124567),
-    ("234|567", is_feasible_234567),
-    ("1|234|567", is_feasible_1234567)
+    # ("1|234|57", is_feasible_123457),
+    # ("1|24|567", is_feasible_124567),
+    # ("234|567", is_feasible_234567),
+    # ("1|234|567", is_feasible_1234567),
 )
+CDENOM = 20
+CRANGE = 6:6
 
-is_case_feasible = zeros(length(CASES))
-for ((case_name, case_func), i) = zip(CASES, 1:length(CASES))
-    is_case_feasible[i] = test_case_with_c(case_name, case_func)
+
+case_by_c_feasible = zeros(length(CASES),length(CRANGE))
+for (cval, j) = zip(CRANGE, 1:length(CRANGE))
+    println(" ========== c = $(cval/CDENOM) ==============")
+    for ((case_name, case_func), i) = zip(CASES, 1:length(CASES))
+        case_by_c_feasible[i,j] = test_case_with_c(case_name, case_func, CDENOM, cval, cval)
+    end
 end
 
 println()
 println(" =========================== RESULTS =========================== ")
 for i = 1:length(CASES)
-    println("Case $(lpad(CASES[i][1],9)) is considered $(lpad(is_case_feasible[i] == 1 ? "FEASIBLE" : "INFEASIBLE", 10))")
+    for j = 1:length(CRANGE)
+        println("Case $(lpad(CASES[i][1],9)) for c = [$(lpad(CRANGE[j]/CDENOM,5)),$(lpad((CRANGE[j]+1)/CDENOM,5))] is considered $(lpad(case_by_c_feasible[i,j] == 1 ? "FEASIBLE" : "INFEASIBLE", 10))")
+    end
 end
 println(" =============================================================== ")
 
 
-function test_all(cstart, cend, breakpoints)
-    # test_case("COUNTING", is_feasible_123457)
-    C_BREAKPOINTS = breakpoints
-    C_START = cstart
-    C_END = cend
-    c_intervals = [interval(i,j) for (i,j) = zip([C_START; C_BREAKPOINTS], [C_BREAKPOINTS; C_END])]
-
-    for c_inter = c_intervals
-        is_case_feasible = zeros(length(CASES))
-        for ((case_name, case_func), i) = zip(CASES, 1:length(CASES))
-            is_case_feasible[i] = test_case(case_name, case_func, c_inter)
-        end
-
-        println()
-        println(" =========================== RESULTS: C = $c_inter =========================== ")
-        for i = 1:length(CASES)
-            println("Case $(lpad(CASES[i][1],9)) is considered $(lpad(is_case_feasible[i] == 1 ? "FEASIBLE" : "INFEASIBLE", 10))")
-        end
-        println(" =============================================================== ")
+function test_cases(cases, cdenom, clow, chigh)
+    is_case_feasible = zeros(length(cases))
+    for ((case_name, case_func), i) = zip(CASES, 1:length(cases))
+        is_case_feasible[i] = test_case_with_c(case_name, case_func, cdenom, clow, chigh)
     end
+
+    println()
+    println(" =========================== RESULTS: c = [$(clow/cdenom),$(chigh/cdenom)] =========================== ")
+    for i = 1:length(CASES)
+        println("Case $(lpad(CASES[i][1],9)) is considered $(lpad(is_case_feasible[i] == 1 ? "FEASIBLE" : "INFEASIBLE", 10))")
+    end
+    println(" =============================================================== ")
 end
+
+# function test_all(cstart, cend, breakpoints)
+#     # test_case("COUNTING", is_feasible_123457)
+#     C_BREAKPOINTS = breakpoints
+#     C_START = cstart
+#     C_END = cend
+#     c_intervals = [interval(i,j) for (i,j) = zip([C_START; C_BREAKPOINTS], [C_BREAKPOINTS; C_END])]
+
+#     for c_inter = c_intervals
+#         is_case_feasible = zeros(length(CASES))
+#         for ((case_name, case_func), i) = zip(CASES, 1:length(CASES))
+#             is_case_feasible[i] = test_case(case_name, case_func, c_inter)
+#         end
+
+#         println()
+#         println(" =========================== RESULTS: C = $c_inter =========================== ")
+#         for i = 1:length(CASES)
+#             println("Case $(lpad(CASES[i][1],9)) is considered $(lpad(is_case_feasible[i] == 1 ? "FEASIBLE" : "INFEASIBLE", 10))")
+#         end
+#         println(" =============================================================== ")
+#     end
+# end
 
 ### DEBUGGING ###
 # Number of boxes checked
